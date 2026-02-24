@@ -86,11 +86,15 @@ def extract_features(tokens: List[Token]) -> List[VariableFeatures]:
     if not tokens:
         return []
 
-    # First pass: identify all variable declarations
     variables: Dict[str, List[int]] = {}
+
+    # Pass 0: register function parameters from the signature
+    _find_parameters(tokens, variables)
+
+    # Pass 1: identify variable declarations in the body
     _find_declarations(tokens, variables)
 
-    # Second pass: analyze variable usage patterns
+    # Pass 2: analyze variable usage patterns
     _analyze_usage(tokens, variables)
 
     result = []
@@ -98,6 +102,83 @@ def extract_features(tokens: List[Token]) -> List[VariableFeatures]:
         result.append(VariableFeatures(name=name, features=list(feats)))
 
     return result
+
+
+def _find_parameters(tokens: List[Token], variables: Dict[str, List[int]]) -> None:
+    """
+    Extract function parameters from the signature and register them as
+    declared variables.
+
+    Scans the token range between the first LPAREN and its matching RPAREN
+    (the parameter list), detecting  TYPE IDENTIFIER  pairs (with optional
+    array markers) and adding each to *variables* with F_DEFINED set.
+    """
+    size = len(tokens)
+
+    # Locate the opening brace of the function body (first LBRACE)
+    body_start = -1
+    for idx in range(size):
+        if tokens[idx].type == 'LBRACE':
+            body_start = idx
+            break
+    if body_start < 0:
+        return
+
+    # Locate the RPAREN immediately before the body brace
+    # (work backwards from body_start to find the matching parameter RPAREN)
+    rparen_idx = -1
+    for idx in range(body_start - 1, -1, -1):
+        t = tokens[idx]
+        if t.type == 'RPAREN':
+            rparen_idx = idx
+            break
+        # Stop early if we see something that cannot appear between ) and {
+        if t.type in ('LBRACE', 'SEMICOLON'):
+            break
+    if rparen_idx < 0:
+        return
+
+    # Find the matching LPAREN for that RPAREN
+    lparen_idx = -1
+    depth = 0
+    for idx in range(rparen_idx, -1, -1):
+        if tokens[idx].type == 'RPAREN':
+            depth += 1
+        elif tokens[idx].type == 'LPAREN':
+            depth -= 1
+            if depth == 0:
+                lparen_idx = idx
+                break
+    if lparen_idx < 0:
+        return
+
+    # Parse  TYPE IDENTIFIER  pairs inside the parameter list
+    i = lparen_idx + 1
+    while i < rparen_idx:
+        tok = tokens[i]
+        if tok.type == 'COMMA':
+            i += 1
+            continue
+
+        # Match: TYPE IDENTIFIER (optionally followed by [] or qualifiers)
+        if (tok.type in ('DATATYPE', 'IDENTIFIER', 'KEYWORD') and
+                i + 1 < rparen_idx and
+                tokens[i + 1].type == 'IDENTIFIER'):
+            var_name = tokens[i + 1].value
+            type_val = tok.value
+
+            if var_name not in variables:
+                variables[var_name] = [0] * NUM_FEATURES
+
+            variables[var_name][F_DEFINED] += 1
+            variables[var_name][F_DEFINED_BY_TYPE] = TYPE_ENCODING.get(type_val, 0)
+            i += 2
+            # Skip array markers:  int arr[]  or pointer markers
+            while i < rparen_idx and tokens[i].type in (
+                    'LBRACKET', 'RBRACKET', 'OPERATOR', 'NUMERIC'):
+                i += 1
+        else:
+            i += 1
 
 
 def _find_declarations(tokens: List[Token], variables: Dict[str, List[int]]) -> None:
@@ -208,44 +289,91 @@ def _analyze_initializer(tokens: List[Token], start: int, var_name: str,
 
 
 def _analyze_usage(tokens: List[Token], variables: Dict[str, List[int]]) -> None:
-    """Analyze how variables are used throughout the method."""
+    """
+    Analyze how variables are used throughout the method.
+
+    Brace-stack tracking
+    --------------------
+    The depth of loop/if/switch nesting is updated when an LBRACE is seen
+    (not when the keyword is seen).  A *pending_context* variable records
+    the most recent control-flow keyword and is consumed by the next LBRACE.
+    If a semicolon is encountered at paren-depth 0 (i.e., outside a for(;;)
+    header) with a pending keyword, the keyword was for a brace-less body;
+    pending_context is cleared without incrementing any depth counter.
+    This prevents brace-less  for/while  bodies from permanently inflating
+    loop_depth (the original bug).
+    """
     size = len(tokens)
 
-    # Track nesting depths
+    # Nesting depths (updated on LBRACE, decremented on matching RBRACE)
     loop_depth = 0
     if_depth = 0
     switch_depth = 0
     case_depth = 0
-    brace_stack: List[str] = []  # track what each brace level represents
+
+    # Stack of context labels pushed when a control-flow LBRACE is entered
+    brace_stack: List[str] = []
+
+    # Keyword seen but not yet paired with its LBRACE
+    pending_context: str = ''
+
+    # Paren depth – used to distinguish semicolons inside  for(;;)  from
+    # the statement-terminating semicolon of a brace-less body
+    paren_depth: int = 0
 
     for i in range(size):
         tok = tokens[i]
 
-        # Track control flow nesting
-        if tok.type == 'KEYWORD':
+        # ── Parenthesis depth tracking ──────────────────────────────────────
+        if tok.type == 'LPAREN':
+            paren_depth += 1
+        elif tok.type == 'RPAREN':
+            paren_depth = max(0, paren_depth - 1)
+
+        # ── Keyword recognition (set pending_context, handle case/default) ──
+        elif tok.type == 'KEYWORD':
             if tok.value in ('for', 'while', 'do'):
-                brace_stack.append('loop')
-                loop_depth += 1
+                pending_context = 'loop'
             elif tok.value == 'if':
-                brace_stack.append('if')
-                if_depth += 1
+                pending_context = 'if'
             elif tok.value == 'switch':
-                brace_stack.append('switch')
-                switch_depth += 1
+                pending_context = 'switch'
             elif tok.value == 'case':
                 case_depth += 1
             elif tok.value == 'default' and switch_depth > 0:
                 case_depth += 1
 
-        if tok.type == 'RBRACE' and brace_stack:
-            context = brace_stack.pop()
-            if context == 'loop':
-                loop_depth = max(0, loop_depth - 1)
-            elif context == 'if':
-                if_depth = max(0, if_depth - 1)
-            elif context == 'switch':
-                switch_depth = max(0, switch_depth - 1)
-                case_depth = 0
+        # ── LBRACE: open a new nesting level ────────────────────────────────
+        elif tok.type == 'LBRACE':
+            ctx = pending_context if pending_context else 'other'
+            brace_stack.append(ctx)
+            if ctx == 'loop':
+                loop_depth += 1
+            elif ctx == 'if':
+                if_depth += 1
+            elif ctx == 'switch':
+                switch_depth += 1
+            pending_context = ''  # consumed
+
+        # ── SEMICOLON outside parens: brace-less single-statement body ──────
+        elif tok.type == 'SEMICOLON' and paren_depth == 0:
+            # A semicolon at paren-depth 0 ends a statement.  If there is
+            # a pending control-flow keyword it means the body was brace-less
+            # (e.g.  for(...) arr[i]=0; ).  Clear without touching depths.
+            pending_context = ''
+
+        # ── RBRACE: close the matching nesting level ─────────────────────────
+        elif tok.type == 'RBRACE':
+            if brace_stack:
+                context = brace_stack.pop()
+                if context == 'loop':
+                    loop_depth = max(0, loop_depth - 1)
+                elif context == 'if':
+                    if_depth = max(0, if_depth - 1)
+                elif context == 'switch':
+                    switch_depth = max(0, switch_depth - 1)
+                    case_depth = 0
+            pending_context = ''
 
         # Analyze variable usage
         if tok.type == 'IDENTIFIER' and tok.value in variables:

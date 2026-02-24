@@ -17,6 +17,7 @@ from typing import List, Tuple
 
 from my_tool.tokenizer import tokenize_file, Token
 from my_tool.method_extractor import extract_methods, MethodInfo
+from my_tool.normalizer import normalize
 from my_tool.similarity.hybrid import compute_hybrid_similarity
 from my_tool.report import (
     MethodPairResult,
@@ -113,6 +114,13 @@ def compare_all_methods(all_methods: List[Tuple[str, MethodInfo]],
     results = []
     n = len(all_methods)
 
+    # Pre-compute normalized tokens once per method — O(n) — so the pair
+    # loop doesn't call normalize() O(n²) times (each method appears in
+    # n-1 pairs, so without caching it would be called n*(n-1) times).
+    norm_cache: List[List[Token]] = [
+        normalize(m.tokens)[0] for _, m in all_methods
+    ]
+
     for i in range(n):
         for j in range(i + 1, n):
             file_a, method_a = all_methods[i]
@@ -126,7 +134,9 @@ def compare_all_methods(all_methods: List[Tuple[str, MethodInfo]],
                 result = compute_hybrid_similarity(
                     method_a.tokens, method_b.tokens,
                     method_a.return_type, method_b.return_type,
-                    method_a.param_count, method_b.param_count
+                    method_a.param_count, method_b.param_count,
+                    norm_a=norm_cache[i],
+                    norm_b=norm_cache[j],
                 )
 
                 if result.hybrid_score >= threshold:

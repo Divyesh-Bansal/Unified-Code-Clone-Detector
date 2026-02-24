@@ -11,7 +11,6 @@ import math
 from typing import List, Optional, Tuple
 
 from my_tool.similarity.feature_extractor import VariableFeatures
-from my_tool.similarity.euclidean import euclidean_distance_mapped
 
 
 def find_assignments(cost_matrix: List[List[int]]) -> List[int]:
@@ -259,60 +258,3 @@ def create_bipartite_matrix(features_a: List[List[int]],
     return adjacent
 
 
-def hungarian_similarity(vars_a: List[VariableFeatures],
-                         vars_b: List[VariableFeatures]) -> float:
-    """
-    Compute Hungarian algorithm-based similarity between two methods.
-
-    Creates a bipartite cost matrix from variable features, finds optimal
-    matching, then computes Euclidean distance with that mapping and
-    converts to similarity score.
-
-    Args:
-        vars_a: Variable features for method A.
-        vars_b: Variable features for method B.
-
-    Returns:
-        Similarity percentage (0-100).
-    """
-    if not vars_a or not vars_b:
-        return 0.0
-
-    mat_a = [v.features for v in vars_a]
-    mat_b = [v.features for v in vars_b]
-
-    max_len = max(len(mat_a), len(mat_b))
-    min_len = min(len(mat_a), len(mat_b))
-
-    if min_len == 0:
-        return 0.0
-
-    # If variable count differs too much, skip
-    if max_len > 2 * min_len:
-        return 0.0
-
-    # Pad to equal length
-    feat_len = len(mat_a[0]) if mat_a else 0
-    while len(mat_a) < max_len:
-        mat_a.append([0] * feat_len)
-    while len(mat_b) < max_len:
-        mat_b.append([0] * feat_len)
-
-    # Create bipartite cost matrix and find optimal assignment
-    cost_matrix = create_bipartite_matrix(mat_a, mat_b)
-
-    try:
-        mapping = find_assignments(cost_matrix)
-    except (ValueError, IndexError):
-        return 0.0
-
-    # Compute mapped distance
-    dist = euclidean_distance_mapped(mat_a, mat_b, mapping)
-
-    # Normalize
-    if max_len > 3:
-        dist /= max_len
-
-    # Convert to similarity
-    similarity = (1.0 / (1.0 + dist)) * 100.0
-    return round(similarity, 2)

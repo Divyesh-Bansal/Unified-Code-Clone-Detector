@@ -7,7 +7,7 @@ with confidence classification.
 Final Score = (LexicalDetector × 0.50) + (StructuralDetector × 0.35) + (SemanticDetector × 0.15)
 """
 
-from typing import Dict, List, NamedTuple
+from typing import Dict, List, NamedTuple, Optional
 
 from my_tool.tokenizer import Token
 from my_tool.normalizer import normalize
@@ -57,7 +57,9 @@ def compute_hybrid_similarity(tokens_a: List[Token], tokens_b: List[Token],
                               return_type_a: str = "",
                               return_type_b: str = "",
                               param_count_a: int = 0,
-                              param_count_b: int = 0) -> SimilarityResult:
+                              param_count_b: int = 0,
+                              norm_a: Optional[List[Token]] = None,
+                              norm_b: Optional[List[Token]] = None) -> SimilarityResult:
     """
     Compute the full hybrid similarity score between two methods.
 
@@ -83,9 +85,11 @@ def compute_hybrid_similarity(tokens_a: List[Token], tokens_b: List[Token],
             details={}
         )
 
-    # 1. Normalize tokens for LexicalDetector
-    norm_a, dict_a = normalize(tokens_a)
-    norm_b, dict_b = normalize(tokens_b)
+    # 1. Normalize tokens for LexicalDetector (use pre-computed versions if supplied)
+    if norm_a is None:
+        norm_a, _ = normalize(tokens_a)
+    if norm_b is None:
+        norm_b, _ = normalize(tokens_b)
 
     # 2. LexicalDetector: Cosine + LCS weighted by token size ratio
     lex = lexical_score(norm_a, norm_b)
