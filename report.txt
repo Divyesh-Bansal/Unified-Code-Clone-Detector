@@ -2,24 +2,24 @@
      HYBRID CODE CLONE DETECTION TOOL - ANALYSIS REPORT
 ========================================================================
 
-  Timestamp     : 2026-02-24 01:15:42
-  Input Path    : ..\pro
-  Threshold     : 75.0%
-  Total Files   : 1
-  Total Functions: 9
-  Similar Pairs : 7
+  Timestamp     : 2026-03-29 19:15:35
+  Input Path    : ./test_input
+  Threshold     : 60.0%
+  Total Files   : 3
+  Total Functions: 13
+  Similar Pairs : 6
 
 ------------------------------------------------------------------------
 
   SIMILAR FUNCTION PAIRS
 ------------------------------------------------------------------------
 
-  Pair #1
+  Pair #1  [C++]
   ────────────────────────────────────────
-    File A    : hello.cpp
-    Function A: sumType1_copy (line 6)
-    File B    : hello.cpp
-    Function B: sumType1 (line 40)
+    File A    : file1.cpp
+    Function A: add (line 5)
+    File B    : file1.cpp
+    Function B: sum (line 9)
 
     Individual Algorithm Scores:
       ├── LexicalDetector   : 100.00%  (weight: 50%)
@@ -30,12 +30,12 @@
     ║  HYBRID SCORE: 100.00%  (VERY HIGH confidence)  ║
     ╚══════════════════════════════════════════════╝
 
-  Pair #2
+  Pair #2  [C++]
   ────────────────────────────────────────
-    File A    : hello.cpp
-    Function A: multiplyNumbers (line 12)
-    File B    : hello.cpp
-    Function B: multiplyType2 (line 51)
+    File A    : file1.cpp
+    Function A: add (line 5)
+    File B    : file2.cpp
+    Function B: addition (line 5)
 
     Individual Algorithm Scores:
       ├── LexicalDetector   : 100.00%  (weight: 50%)
@@ -46,84 +46,68 @@
     ║  HYBRID SCORE: 100.00%  (VERY HIGH confidence)  ║
     ╚══════════════════════════════════════════════╝
 
-  Pair #3
+  Pair #3  [C++]
   ────────────────────────────────────────
-    File A    : hello.cpp
-    Function A: sumType1_copy (line 6)
-    File B    : hello.cpp
-    Function B: multiplyNumbers (line 12)
+    File A    : file1.cpp
+    Function A: sum (line 9)
+    File B    : file2.cpp
+    Function B: addition (line 5)
 
     Individual Algorithm Scores:
-      ├── LexicalDetector   :  94.28%  (weight: 50%)
-      ├── StructuralDetector:  58.58%  (weight: 35%)
-      └── SemanticDetector  : 100.00%  (weight: 15%)
-
-    ╔══════════════════════════════════════════════╗
-    ║  HYBRID SCORE:  82.64%  (HIGH confidence)  ║
-    ╚══════════════════════════════════════════════╝
-
-  Pair #4
-  ────────────────────────────────────────
-    File A    : hello.cpp
-    Function A: sumType1_copy (line 6)
-    File B    : hello.cpp
-    Function B: multiplyType2 (line 51)
-
-    Individual Algorithm Scores:
-      ├── LexicalDetector   :  94.28%  (weight: 50%)
-      ├── StructuralDetector:  58.58%  (weight: 35%)
-      └── SemanticDetector  : 100.00%  (weight: 15%)
-
-    ╔══════════════════════════════════════════════╗
-    ║  HYBRID SCORE:  82.64%  (HIGH confidence)  ║
-    ╚══════════════════════════════════════════════╝
-
-  Pair #5
-  ────────────────────────────────────────
-    File A    : hello.cpp
-    Function A: multiplyNumbers (line 12)
-    File B    : hello.cpp
-    Function B: sumType1 (line 40)
-
-    Individual Algorithm Scores:
-      ├── LexicalDetector   :  94.28%  (weight: 50%)
-      ├── StructuralDetector:  58.58%  (weight: 35%)
-      └── SemanticDetector  : 100.00%  (weight: 15%)
-
-    ╔══════════════════════════════════════════════╗
-    ║  HYBRID SCORE:  82.64%  (HIGH confidence)  ║
-    ╚══════════════════════════════════════════════╝
-
-  Pair #6
-  ────────────────────────────────────────
-    File A    : hello.cpp
-    Function A: sumType1 (line 40)
-    File B    : hello.cpp
-    Function B: multiplyType2 (line 51)
-
-    Individual Algorithm Scores:
-      ├── LexicalDetector   :  94.28%  (weight: 50%)
-      ├── StructuralDetector:  58.58%  (weight: 35%)
-      └── SemanticDetector  : 100.00%  (weight: 15%)
-
-    ╔══════════════════════════════════════════════╗
-    ║  HYBRID SCORE:  82.64%  (HIGH confidence)  ║
-    ╚══════════════════════════════════════════════╝
-
-  Pair #7
-  ────────────────────────────────────────
-    File A    : hello.cpp
-    Function A: maxType3_modified (line 19)
-    File B    : hello.cpp
-    Function B: maxType3 (line 62)
-
-    Individual Algorithm Scores:
-      ├── LexicalDetector   :  68.13%  (weight: 50%)
+      ├── LexicalDetector   : 100.00%  (weight: 50%)
       ├── StructuralDetector: 100.00%  (weight: 35%)
-      └── SemanticDetector  :  90.41%  (weight: 15%)
+      └── SemanticDetector  : 100.00%  (weight: 15%)
 
     ╔══════════════════════════════════════════════╗
-    ║  HYBRID SCORE:  82.63%  (HIGH confidence)  ║
+    ║  HYBRID SCORE: 100.00%  (VERY HIGH confidence)  ║
+    ╚══════════════════════════════════════════════╝
+
+  Pair #4  [C++]
+  ────────────────────────────────────────
+    File A    : file1.cpp
+    Function A: printNumbers (line 13)
+    File B    : file2.cpp
+    Function B: displayNumbers (line 9)
+
+    Individual Algorithm Scores:
+      ├── LexicalDetector   : 100.00%  (weight: 50%)
+      ├── StructuralDetector: 100.00%  (weight: 35%)
+      └── SemanticDetector  : 100.00%  (weight: 15%)
+
+    ╔══════════════════════════════════════════════╗
+    ║  HYBRID SCORE: 100.00%  (VERY HIGH confidence)  ║
+    ╚══════════════════════════════════════════════╝
+
+  Pair #5  [Java]
+  ────────────────────────────────────────
+    File A    : sample_java_duplicate.java
+    Function A: addNumbers (line 5)
+    File B    : sample_java_duplicate.java
+    Function B: sumValues (line 10)
+
+    Individual Algorithm Scores:
+      ├── LexicalDetector   : 100.00%  (weight: 50%)
+      ├── StructuralDetector: 100.00%  (weight: 35%)
+      └── SemanticDetector  : 100.00%  (weight: 15%)
+
+    ╔══════════════════════════════════════════════╗
+    ║  HYBRID SCORE: 100.00%  (VERY HIGH confidence)  ║
+    ╚══════════════════════════════════════════════╝
+
+  Pair #6  [Java]
+  ────────────────────────────────────────
+    File A    : sample_java_duplicate.java
+    Function A: printArray (line 15)
+    File B    : sample_java_duplicate.java
+    Function B: displayArray (line 21)
+
+    Individual Algorithm Scores:
+      ├── LexicalDetector   : 100.00%  (weight: 50%)
+      ├── StructuralDetector: 100.00%  (weight: 35%)
+      └── SemanticDetector  : 100.00%  (weight: 15%)
+
+    ╔══════════════════════════════════════════════╗
+    ║  HYBRID SCORE: 100.00%  (VERY HIGH confidence)  ║
     ╚══════════════════════════════════════════════╝
 
 ------------------------------------------------------------------------
@@ -131,15 +115,19 @@
 ------------------------------------------------------------------------
 
   Confidence Distribution:
-    VERY HIGH (>90%): 2 pairs
-    HIGH      (>75%): 5 pairs
+    VERY HIGH (>90%): 6 pairs
+    HIGH      (>75%): 0 pairs
     MEDIUM    (>60%): 0 pairs
     LOW       (≤60%): 0 pairs
 
+  Language Distribution:
+    C++       : 4 pairs
+    Java      : 2 pairs
+
   Score Statistics:
     Highest : 100.00%
-    Lowest  : 82.63%
-    Average : 87.60%
+    Lowest  : 100.00%
+    Average : 100.00%
 
 ========================================================================
   End of Report

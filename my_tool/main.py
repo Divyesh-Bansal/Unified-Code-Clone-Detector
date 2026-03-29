@@ -5,7 +5,7 @@ Usage:
     python -m my_tool <path> [--threshold 60] [--output report.txt]
 
 Where:
-    <path>      Path to a .cpp/.h file or directory containing C++ files
+    <path>      Path to a .cpp/.h/.java file or directory containing source files
     --threshold Minimum similarity percentage to report (default: 60)
     --output    Path for the output report file (default: report.txt)
 """
@@ -13,10 +13,12 @@ Where:
 import argparse
 import os
 import sys
-from typing import List, Tuple
+from typing import Dict, List, Tuple
 
 from my_tool.tokenizer import tokenize_file, Token
 from my_tool.method_extractor import extract_methods, MethodInfo
+from my_tool.java_tokenizer import tokenize_java_file
+from my_tool.java_method_extractor import extract_java_methods
 from my_tool.normalizer import normalize
 from my_tool.similarity.hybrid import compute_hybrid_similarity
 from my_tool.report import (
@@ -26,9 +28,15 @@ from my_tool.report import (
 )
 
 
-def find_cpp_files(path: str) -> List[str]:
+# Supported file extensions grouped by language
+CPP_EXTENSIONS = {'.cpp', '.h', '.hpp', '.cc', '.cxx'}
+JAVA_EXTENSIONS = {'.java'}
+ALL_EXTENSIONS = CPP_EXTENSIONS | JAVA_EXTENSIONS
+
+
+def find_source_files(path: str) -> List[str]:
     """
-    Find all C++ source files (.cpp, .h, .hpp, .cc, .cxx) in a path.
+    Find all supported source files (C++ and Java) in a path.
 
     Args:
         path: File or directory path.
@@ -38,39 +46,62 @@ def find_cpp_files(path: str) -> List[str]:
 
     Raises:
         FileNotFoundError: If path doesn't exist.
-        ValueError: If path is a file but not a C++ file.
+        ValueError: If path is a file but not a supported source file.
     """
-    cpp_extensions = {'.cpp', '.h', '.hpp', '.cc', '.cxx'}
-
     if not os.path.exists(path):
         raise FileNotFoundError(f"Path does not exist: {path}")
 
     if os.path.isfile(path):
         ext = os.path.splitext(path)[1].lower()
-        if ext not in cpp_extensions:
+        if ext not in ALL_EXTENSIONS:
             raise ValueError(
-                f"File '{path}' is not a C++ file. "
-                f"Supported extensions: {', '.join(sorted(cpp_extensions))}"
+                f"File '{path}' is not a supported source file. "
+                f"Supported extensions: {', '.join(sorted(ALL_EXTENSIONS))}"
             )
         return [os.path.abspath(path)]
 
-    # Directory: recursively find C++ files
+    # Directory: recursively find source files
     files = []
     for root, _, filenames in os.walk(path):
         for filename in sorted(filenames):
             ext = os.path.splitext(filename)[1].lower()
-            if ext in cpp_extensions:
+            if ext in ALL_EXTENSIONS:
                 files.append(os.path.abspath(os.path.join(root, filename)))
 
     if not files:
-        print(f"Warning: No C++ files found in '{path}'", file=sys.stderr)
+        print(f"Warning: No supported source files found in '{path}'",
+              file=sys.stderr)
 
     return files
 
 
+# Keep the old name as an alias for backward compatibility with tests
+find_cpp_files = find_source_files
+
+
+def group_files_by_language(files: List[str]) -> Dict[str, List[str]]:
+    """
+    Group files by language based on extension.
+
+    Args:
+        files: List of file paths.
+
+    Returns:
+        Dict with keys 'cpp' and 'java', each mapping to a list of paths.
+    """
+    groups: Dict[str, List[str]] = {'cpp': [], 'java': []}
+    for filepath in files:
+        ext = os.path.splitext(filepath)[1].lower()
+        if ext in CPP_EXTENSIONS:
+            groups['cpp'].append(filepath)
+        elif ext in JAVA_EXTENSIONS:
+            groups['java'].append(filepath)
+    return groups
+
+
 def extract_all_methods(files: List[str]) -> List[Tuple[str, MethodInfo]]:
     """
-    Extract methods from all files.
+    Extract methods from all C++ files.
 
     Args:
         files: List of C++ file paths.
@@ -99,14 +130,47 @@ def extract_all_methods(files: List[str]) -> List[Tuple[str, MethodInfo]]:
     return all_methods
 
 
+def extract_all_methods_java(files: List[str]) -> List[Tuple[str, MethodInfo]]:
+    """
+    Extract methods from all Java files.
+
+    Args:
+        files: List of Java file paths.
+
+    Returns:
+        List of (filepath, MethodInfo) tuples.
+    """
+    all_methods = []
+    errors = []
+
+    for filepath in files:
+        try:
+            tokens = tokenize_java_file(filepath)
+            methods = extract_java_methods(tokens)
+            for method in methods:
+                all_methods.append((filepath, method))
+        except (FileNotFoundError, IOError) as e:
+            errors.append(f"  Warning: Skipping {filepath}: {e}")
+        except Exception as e:
+            errors.append(f"  Warning: Error processing {filepath}: {e}")
+
+    if errors:
+        for err in errors:
+            print(err, file=sys.stderr)
+
+    return all_methods
+
+
 def compare_all_methods(all_methods: List[Tuple[str, MethodInfo]],
-                        threshold: float) -> List[MethodPairResult]:
+                        threshold: float,
+                        language: str = "C++") -> List[MethodPairResult]:
     """
     Compare all method pairs and find similar ones above threshold.
 
     Args:
         all_methods: List of (filepath, MethodInfo) tuples.
         threshold: Minimum similarity percentage.
+        language: Language label for the results.
 
     Returns:
         List of MethodPairResult for pairs above threshold.
@@ -147,7 +211,8 @@ def compare_all_methods(all_methods: List[Tuple[str, MethodInfo]],
                         file_b=file_b,
                         func_b=method_b.name,
                         line_b=method_b.start_line,
-                        result=result
+                        result=result,
+                        language=language
                     ))
             except Exception as e:
                 print(f"  Warning: Error comparing {method_a.name} vs "
@@ -162,16 +227,16 @@ def main():
     """Main entry point for the CLI."""
     parser = argparse.ArgumentParser(
         prog='my_tool',
-        description='Hybrid C++ Code Clone Detection Tool - '
-                    'Detects similar/duplicate functions in C++ source files '
-                    'using an ensemble of LexicalDetector, StructuralDetector, '
-                    'and SemanticDetector algorithms.',
+        description='Hybrid Code Clone Detection Tool - '
+                    'Detects similar/duplicate functions in C++ and Java '
+                    'source files using an ensemble of LexicalDetector, '
+                    'StructuralDetector, and SemanticDetector algorithms.',
         epilog='Example: python -m my_tool ./src --threshold 50'
     )
 
     parser.add_argument(
         'path',
-        help='Path to a C++ file or directory containing C++ files'
+        help='Path to a C++/Java file or directory containing source files'
     )
     parser.add_argument(
         '--threshold', '-t',
@@ -193,40 +258,65 @@ def main():
         print("Error: Threshold must be between 0 and 100.", file=sys.stderr)
         sys.exit(1)
 
-    # Find C++ files
+    # Find source files
     try:
-        files = find_cpp_files(args.path)
+        files = find_source_files(args.path)
     except (FileNotFoundError, ValueError) as e:
         print(f"Error: {e}", file=sys.stderr)
         sys.exit(1)
 
     if not files:
-        print("No C++ files found to analyze.", file=sys.stderr)
+        print("No supported source files found to analyze.", file=sys.stderr)
         sys.exit(1)
 
-    print(f"\nAnalyzing {len(files)} C++ file(s)...")
+    # Group files by language
+    groups = group_files_by_language(files)
+    cpp_files = groups['cpp']
+    java_files = groups['java']
 
-    # Extract methods
-    all_methods = extract_all_methods(files)
-    total_functions = len(all_methods)
+    print(f"\nAnalyzing {len(files)} source file(s) "
+          f"({len(cpp_files)} C++, {len(java_files)} Java)...")
+
+    # Extract methods per language group
+    all_methods_cpp = extract_all_methods(cpp_files) if cpp_files else []
+    all_methods_java = extract_all_methods_java(java_files) if java_files else []
+
+    total_functions = len(all_methods_cpp) + len(all_methods_java)
 
     if total_functions == 0:
         print("No functions found in the provided files.")
         sys.exit(0)
 
-    if total_functions < 2:
-        print("Only one function found — need at least two to compare.")
+    if total_functions < 2 and len(all_methods_cpp) < 2 and len(all_methods_java) < 2:
+        print("Need at least two functions in the same language to compare.")
         sys.exit(0)
 
-    print(f"Found {total_functions} function(s). "
-          f"Comparing {total_functions * (total_functions - 1) // 2} pairs...")
+    print(f"Found {total_functions} function(s) "
+          f"({len(all_methods_cpp)} C++, {len(all_methods_java)} Java).")
 
-    # Compare all method pairs
-    results = compare_all_methods(all_methods, args.threshold)
+    # Compare within each language group independently
+    all_results: List[MethodPairResult] = []
+
+    if len(all_methods_cpp) >= 2:
+        cpp_pairs = len(all_methods_cpp) * (len(all_methods_cpp) - 1) // 2
+        print(f"Comparing {cpp_pairs} C++ pair(s)...")
+        cpp_results = compare_all_methods(
+            all_methods_cpp, args.threshold, language="C++")
+        all_results.extend(cpp_results)
+
+    if len(all_methods_java) >= 2:
+        java_pairs = len(all_methods_java) * (len(all_methods_java) - 1) // 2
+        print(f"Comparing {java_pairs} Java pair(s)...")
+        java_results = compare_all_methods(
+            all_methods_java, args.threshold, language="Java")
+        all_results.extend(java_results)
+
+    # Sort merged results by hybrid score descending
+    all_results.sort(key=lambda r: r.result.hybrid_score, reverse=True)
 
     # Console output
     console_output = format_console_output(
-        results, args.path, args.threshold,
+        all_results, args.path, args.threshold,
         total_files=len(files),
         total_functions=total_functions
     )
@@ -235,7 +325,7 @@ def main():
     # Generate report file
     try:
         report_path = generate_report(
-            results, args.path, args.threshold,
+            all_results, args.path, args.threshold,
             output_path=args.output,
             total_files=len(files),
             total_functions=total_functions

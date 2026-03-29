@@ -21,6 +21,7 @@ class MethodPairResult(NamedTuple):
     func_b: str
     line_b: int
     result: SimilarityResult
+    language: str = "C++"
 
 
 def _rel(filepath: str, base: str) -> str:
@@ -80,8 +81,9 @@ def generate_report(results: List[MethodPairResult],
 
             for idx, pair in enumerate(results, 1):
                 r = pair.result
+                lang_tag = f"[{pair.language}]"
 
-                f.write(f"  Pair #{idx}\n")
+                f.write(f"  Pair #{idx}  {lang_tag}\n")
                 f.write(f"  {'─' * 40}\n")
                 f.write(f"    File A    : {_rel(pair.file_a, input_path)}\n")
                 f.write(f"    Function A: {pair.func_a} (line {pair.line_a})\n")
@@ -116,6 +118,16 @@ def generate_report(results: List[MethodPairResult],
             f.write(f"    MEDIUM    (>60%): {medium} pairs\n")
             f.write(f"    LOW       (≤60%): {low} pairs\n")
             f.write(f"\n")
+
+            # Language distribution
+            lang_counts = {}
+            for p in results:
+                lang_counts[p.language] = lang_counts.get(p.language, 0) + 1
+            if len(lang_counts) > 1:
+                f.write(f"  Language Distribution:\n")
+                for lang, count in sorted(lang_counts.items()):
+                    f.write(f"    {lang:10s}: {count} pairs\n")
+                f.write(f"\n")
 
             if results:
                 scores = [p.result.hybrid_score for p in results]
@@ -171,8 +183,9 @@ def format_console_output(results: List[MethodPairResult],
 
     for idx, pair in enumerate(results, 1):
         r = pair.result
+        lang_tag = f"[{pair.language}]"
         lines.append("")
-        lines.append(f"  Pair #{idx}:")
+        lines.append(f"  Pair #{idx}:  {lang_tag}")
         lines.append(f"    {_rel(pair.file_a, input_path)}: {pair.func_a} (line {pair.line_a})")
         lines.append(f"    {_rel(pair.file_b, input_path)}: {pair.func_b} (line {pair.line_b})")
         lines.append(f"    Lexical: {r.lexical_score:.1f}%  |  Structural: {r.structural_score:.1f}%  |  Semantic: {r.semantic_score:.1f}%")
