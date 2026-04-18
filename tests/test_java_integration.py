@@ -77,7 +77,7 @@ class TestGroupFilesByLanguage:
 
     def test_empty_list(self):
         groups = group_files_by_language([])
-        assert groups == {'cpp': [], 'java': []}
+        assert groups == {'cpp': [], 'java': [], 'cs': []}
 
 
 class TestJavaMethodExtraction:

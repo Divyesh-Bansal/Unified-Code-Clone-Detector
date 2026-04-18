@@ -34,7 +34,7 @@ class TestGenerateReport:
             path = generate_report([], "./test", 60.0,
                                    output_path=outpath)
             assert os.path.exists(path)
-            with open(path) as f:
+            with open(path, encoding='utf-8') as f:
                 content = f.read()
             assert "No similar function pairs found" in content
         finally:
@@ -56,7 +56,7 @@ class TestGenerateReport:
                                    total_files=2,
                                    total_functions=4)
             assert os.path.exists(path)
-            with open(path) as f:
+            with open(path, encoding='utf-8') as f:
                 content = f.read()
             assert "funcA" in content
             assert "funcB" in content
@@ -80,7 +80,7 @@ class TestGenerateReport:
 
         try:
             generate_report(pairs, "./test", 60.0, output_path=outpath)
-            with open(path := outpath) as f:
+            with open(path := outpath, encoding='utf-8') as f:
                 content = f.read()
             assert "SUMMARY" in content
             assert "Confidence Distribution" in content

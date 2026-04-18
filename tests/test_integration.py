@@ -115,7 +115,7 @@ class TestFullPipeline:
                 total_functions=len(methods)
             )
             assert os.path.exists(report_path)
-            with open(report_path) as f:
+            with open(report_path, encoding='utf-8') as f:
                 content = f.read()
             assert "HYBRID CODE CLONE DETECTION" in content
         finally:

@@ -19,6 +19,8 @@ from my_tool.tokenizer import tokenize_file, Token
 from my_tool.method_extractor import extract_methods, MethodInfo
 from my_tool.java_tokenizer import tokenize_java_file
 from my_tool.java_method_extractor import extract_java_methods
+from my_tool.cs_tokenizer import tokenize_cs_file
+from my_tool.cs_method_extractor import extract_cs_methods
 from my_tool.normalizer import normalize
 from my_tool.similarity.hybrid import compute_hybrid_similarity
 from my_tool.report import (
@@ -31,7 +33,8 @@ from my_tool.report import (
 # Supported file extensions grouped by language
 CPP_EXTENSIONS = {'.cpp', '.h', '.hpp', '.cc', '.cxx'}
 JAVA_EXTENSIONS = {'.java'}
-ALL_EXTENSIONS = CPP_EXTENSIONS | JAVA_EXTENSIONS
+CS_EXTENSIONS = {'.cs'}
+ALL_EXTENSIONS = CPP_EXTENSIONS | JAVA_EXTENSIONS | CS_EXTENSIONS
 
 
 def find_source_files(path: str) -> List[str]:
@@ -87,15 +90,17 @@ def group_files_by_language(files: List[str]) -> Dict[str, List[str]]:
         files: List of file paths.
 
     Returns:
-        Dict with keys 'cpp' and 'java', each mapping to a list of paths.
+        Dict with keys 'cpp', 'java', and 'cs', each mapping to a list of paths.
     """
-    groups: Dict[str, List[str]] = {'cpp': [], 'java': []}
+    groups: Dict[str, List[str]] = {'cpp': [], 'java': [], 'cs': []}
     for filepath in files:
         ext = os.path.splitext(filepath)[1].lower()
         if ext in CPP_EXTENSIONS:
             groups['cpp'].append(filepath)
         elif ext in JAVA_EXTENSIONS:
             groups['java'].append(filepath)
+        elif ext in CS_EXTENSIONS:
+            groups['cs'].append(filepath)
     return groups
 
 
@@ -147,6 +152,37 @@ def extract_all_methods_java(files: List[str]) -> List[Tuple[str, MethodInfo]]:
         try:
             tokens = tokenize_java_file(filepath)
             methods = extract_java_methods(tokens)
+            for method in methods:
+                all_methods.append((filepath, method))
+        except (FileNotFoundError, IOError) as e:
+            errors.append(f"  Warning: Skipping {filepath}: {e}")
+        except Exception as e:
+            errors.append(f"  Warning: Error processing {filepath}: {e}")
+
+    if errors:
+        for err in errors:
+            print(err, file=sys.stderr)
+
+    return all_methods
+
+
+def extract_all_methods_cs(files: List[str]) -> List[Tuple[str, MethodInfo]]:
+    """
+    Extract methods from all C# files.
+
+    Args:
+        files: List of C# file paths.
+
+    Returns:
+        List of (filepath, MethodInfo) tuples.
+    """
+    all_methods = []
+    errors = []
+
+    for filepath in files:
+        try:
+            tokens = tokenize_cs_file(filepath)
+            methods = extract_cs_methods(tokens)
             for method in methods:
                 all_methods.append((filepath, method))
         except (FileNotFoundError, IOError) as e:
@@ -228,7 +264,7 @@ def main():
     parser = argparse.ArgumentParser(
         prog='my_tool',
         description='Hybrid Code Clone Detection Tool - '
-                    'Detects similar/duplicate functions in C++ and Java '
+                    'Detects similar/duplicate functions in C++, Java, and C# '
                     'source files using an ensemble of LexicalDetector, '
                     'StructuralDetector, and SemanticDetector algorithms.',
         epilog='Example: python -m my_tool ./src --threshold 50'
@@ -236,7 +272,7 @@ def main():
 
     parser.add_argument(
         'path',
-        help='Path to a C++/Java file or directory containing source files'
+        help='Path to a C++/Java/C# file or directory containing source files'
     )
     parser.add_argument(
         '--threshold', '-t',
@@ -273,26 +309,28 @@ def main():
     groups = group_files_by_language(files)
     cpp_files = groups['cpp']
     java_files = groups['java']
+    cs_files = groups['cs']
 
     print(f"\nAnalyzing {len(files)} source file(s) "
-          f"({len(cpp_files)} C++, {len(java_files)} Java)...")
+          f"({len(cpp_files)} C++, {len(java_files)} Java, {len(cs_files)} C#)...")
 
     # Extract methods per language group
     all_methods_cpp = extract_all_methods(cpp_files) if cpp_files else []
     all_methods_java = extract_all_methods_java(java_files) if java_files else []
+    all_methods_cs = extract_all_methods_cs(cs_files) if cs_files else []
 
-    total_functions = len(all_methods_cpp) + len(all_methods_java)
+    total_functions = len(all_methods_cpp) + len(all_methods_java) + len(all_methods_cs)
 
     if total_functions == 0:
         print("No functions found in the provided files.")
         sys.exit(0)
 
-    if total_functions < 2 and len(all_methods_cpp) < 2 and len(all_methods_java) < 2:
+    if total_functions < 2 and len(all_methods_cpp) < 2 and len(all_methods_java) < 2 and len(all_methods_cs) < 2:
         print("Need at least two functions in the same language to compare.")
         sys.exit(0)
 
     print(f"Found {total_functions} function(s) "
-          f"({len(all_methods_cpp)} C++, {len(all_methods_java)} Java).")
+          f"({len(all_methods_cpp)} C++, {len(all_methods_java)} Java, {len(all_methods_cs)} C#).")
 
     # Compare within each language group independently
     all_results: List[MethodPairResult] = []
@@ -310,6 +348,13 @@ def main():
         java_results = compare_all_methods(
             all_methods_java, args.threshold, language="Java")
         all_results.extend(java_results)
+
+    if len(all_methods_cs) >= 2:
+        cs_pairs = len(all_methods_cs) * (len(all_methods_cs) - 1) // 2
+        print(f"Comparing {cs_pairs} C# pair(s)...")
+        cs_results = compare_all_methods(
+            all_methods_cs, args.threshold, language="C#")
+        all_results.extend(cs_results)
 
     # Sort merged results by hybrid score descending
     all_results.sort(key=lambda r: r.result.hybrid_score, reverse=True)
