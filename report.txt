@@ -2,24 +2,120 @@
      HYBRID CODE CLONE DETECTION TOOL - ANALYSIS REPORT
 ========================================================================
 
-  Timestamp     : 2026-04-18 21:20:46
-  Input Path    : test_csharp
-  Threshold     : 50.0%
-  Total Files   : 2
-  Total Functions: 2
-  Similar Pairs : 1
+  Timestamp     : 2026-04-18 21:28:07
+  Input Path    : ./test_input
+  Threshold     : 60.0%
+  Total Files   : 5
+  Total Functions: 15
+  Similar Pairs : 7
 
 ------------------------------------------------------------------------
 
   SIMILAR FUNCTION PAIRS
 ------------------------------------------------------------------------
 
-  Pair #1  [C#]
+  Pair #1  [C++]
+  ────────────────────────────────────────
+    File A    : file1.cpp
+    Function A: add (line 5)
+    File B    : file1.cpp
+    Function B: sum (line 9)
+
+    Individual Algorithm Scores:
+      ├── LexicalDetector   : 100.00%  (weight: 50%)
+      ├── StructuralDetector: 100.00%  (weight: 35%)
+      └── SemanticDetector  : 100.00%  (weight: 15%)
+
+    ╔══════════════════════════════════════════════╗
+    ║  HYBRID SCORE: 100.00%  (VERY HIGH confidence)  ║
+    ╚══════════════════════════════════════════════╝
+
+  Pair #2  [C++]
+  ────────────────────────────────────────
+    File A    : file1.cpp
+    Function A: add (line 5)
+    File B    : file2.cpp
+    Function B: addition (line 5)
+
+    Individual Algorithm Scores:
+      ├── LexicalDetector   : 100.00%  (weight: 50%)
+      ├── StructuralDetector: 100.00%  (weight: 35%)
+      └── SemanticDetector  : 100.00%  (weight: 15%)
+
+    ╔══════════════════════════════════════════════╗
+    ║  HYBRID SCORE: 100.00%  (VERY HIGH confidence)  ║
+    ╚══════════════════════════════════════════════╝
+
+  Pair #3  [C++]
+  ────────────────────────────────────────
+    File A    : file1.cpp
+    Function A: sum (line 9)
+    File B    : file2.cpp
+    Function B: addition (line 5)
+
+    Individual Algorithm Scores:
+      ├── LexicalDetector   : 100.00%  (weight: 50%)
+      ├── StructuralDetector: 100.00%  (weight: 35%)
+      └── SemanticDetector  : 100.00%  (weight: 15%)
+
+    ╔══════════════════════════════════════════════╗
+    ║  HYBRID SCORE: 100.00%  (VERY HIGH confidence)  ║
+    ╚══════════════════════════════════════════════╝
+
+  Pair #4  [C++]
+  ────────────────────────────────────────
+    File A    : file1.cpp
+    Function A: printNumbers (line 13)
+    File B    : file2.cpp
+    Function B: displayNumbers (line 9)
+
+    Individual Algorithm Scores:
+      ├── LexicalDetector   : 100.00%  (weight: 50%)
+      ├── StructuralDetector: 100.00%  (weight: 35%)
+      └── SemanticDetector  : 100.00%  (weight: 15%)
+
+    ╔══════════════════════════════════════════════╗
+    ║  HYBRID SCORE: 100.00%  (VERY HIGH confidence)  ║
+    ╚══════════════════════════════════════════════╝
+
+  Pair #5  [Java]
+  ────────────────────────────────────────
+    File A    : sample.java
+    Function A: addNumbers (line 5)
+    File B    : sample.java
+    Function B: sumValues (line 10)
+
+    Individual Algorithm Scores:
+      ├── LexicalDetector   : 100.00%  (weight: 50%)
+      ├── StructuralDetector: 100.00%  (weight: 35%)
+      └── SemanticDetector  : 100.00%  (weight: 15%)
+
+    ╔══════════════════════════════════════════════╗
+    ║  HYBRID SCORE: 100.00%  (VERY HIGH confidence)  ║
+    ╚══════════════════════════════════════════════╝
+
+  Pair #6  [Java]
+  ────────────────────────────────────────
+    File A    : sample.java
+    Function A: printArray (line 15)
+    File B    : sample.java
+    Function B: displayArray (line 21)
+
+    Individual Algorithm Scores:
+      ├── LexicalDetector   : 100.00%  (weight: 50%)
+      ├── StructuralDetector: 100.00%  (weight: 35%)
+      └── SemanticDetector  : 100.00%  (weight: 15%)
+
+    ╔══════════════════════════════════════════════╗
+    ║  HYBRID SCORE: 100.00%  (VERY HIGH confidence)  ║
+    ╚══════════════════════════════════════════════╝
+
+  Pair #7  [C#]
   ────────────────────────────────────────
     File A    : 1.cs
-    Function A: m (line 1)
+    Function A: m (line 5)
     File B    : 2.cs
-    Function B: s (line 1)
+    Function B: s (line 5)
 
     Individual Algorithm Scores:
       ├── LexicalDetector   :  65.31%  (weight: 50%)
@@ -35,15 +131,20 @@
 ------------------------------------------------------------------------
 
   Confidence Distribution:
-    VERY HIGH (>90%): 0 pairs
+    VERY HIGH (>90%): 6 pairs
     HIGH      (>75%): 1 pairs
     MEDIUM    (>60%): 0 pairs
     LOW       (≤60%): 0 pairs
 
+  Language Distribution:
+    C#        : 1 pairs
+    C++       : 4 pairs
+    Java      : 2 pairs
+
   Score Statistics:
-    Highest : 80.03%
+    Highest : 100.00%
     Lowest  : 80.03%
-    Average : 80.03%
+    Average : 97.15%
 
 ========================================================================
   End of Report
