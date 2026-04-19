@@ -2,12 +2,12 @@
      HYBRID CODE CLONE DETECTION TOOL - ANALYSIS REPORT
 ========================================================================
 
-  Timestamp     : 2026-04-20 03:10:52
+  Timestamp     : 2026-04-20 03:31:49
   Input Path    : .\dataset_leetcode287\
   Threshold     : 60.0%
   Total Files   : 60
   Total Functions: 60
-  Similar Pairs : 31
+  Similar Pairs : 39
 
 ------------------------------------------------------------------------
 
@@ -75,7 +75,7 @@
       └── SemanticDetector  : 100.00%  (weight: 15%)
 
     ╔══════════════════════════════════════════════╗
-    ║  HYBRID SCORE:  97.60%  (VERY HIGH confidence)  ║
+    ║  HYBRID SCORE:  97.84%  (VERY HIGH confidence)  ║
     ╚══════════════════════════════════════════════╝
 
   Pair #5  [Java]
@@ -91,7 +91,7 @@
       └── SemanticDetector  : 100.00%  (weight: 15%)
 
     ╔══════════════════════════════════════════════╗
-    ║  HYBRID SCORE:  97.60%  (VERY HIGH confidence)  ║
+    ║  HYBRID SCORE:  97.84%  (VERY HIGH confidence)  ║
     ╚══════════════════════════════════════════════╝
 
   Pair #6  [C#]
@@ -107,7 +107,7 @@
       └── SemanticDetector  : 100.00%  (weight: 15%)
 
     ╔══════════════════════════════════════════════╗
-    ║  HYBRID SCORE:  97.60%  (VERY HIGH confidence)  ║
+    ║  HYBRID SCORE:  97.84%  (VERY HIGH confidence)  ║
     ╚══════════════════════════════════════════════╝
 
   Pair #7  [C++]
@@ -123,7 +123,7 @@
       └── SemanticDetector  : 100.00%  (weight: 15%)
 
     ╔══════════════════════════════════════════════╗
-    ║  HYBRID SCORE:  96.30%  (VERY HIGH confidence)  ║
+    ║  HYBRID SCORE:  96.67%  (VERY HIGH confidence)  ║
     ╚══════════════════════════════════════════════╝
 
   Pair #8  [C++]
@@ -139,42 +139,10 @@
       └── SemanticDetector  : 100.00%  (weight: 15%)
 
     ╔══════════════════════════════════════════════╗
-    ║  HYBRID SCORE:  95.59%  (VERY HIGH confidence)  ║
+    ║  HYBRID SCORE:  96.03%  (VERY HIGH confidence)  ║
     ╚══════════════════════════════════════════════╝
 
   Pair #9  [C++]
-  ────────────────────────────────────────
-    File A    : 12.cpp
-    Function A: findDuplicate (line 4)
-    File B    : 31.cpp
-    Function B: findDuplicate (line 3)
-
-    Individual Algorithm Scores:
-      ├── LexicalDetector   :  71.55%  (weight: 50%)
-      ├── StructuralDetector: 100.00%  (weight: 35%)
-      └── SemanticDetector  :  74.87%  (weight: 15%)
-
-    ╔══════════════════════════════════════════════╗
-    ║  HYBRID SCORE:  82.01%  (HIGH confidence)  ║
-    ╚══════════════════════════════════════════════╝
-
-  Pair #10  [C++]
-  ────────────────────────────────────────
-    File A    : 22.cpp
-    Function A: findDuplicate (line 3)
-    File B    : 31.cpp
-    Function B: findDuplicate (line 3)
-
-    Individual Algorithm Scores:
-      ├── LexicalDetector   :  71.55%  (weight: 50%)
-      ├── StructuralDetector: 100.00%  (weight: 35%)
-      └── SemanticDetector  :  74.87%  (weight: 15%)
-
-    ╔══════════════════════════════════════════════╗
-    ║  HYBRID SCORE:  82.01%  (HIGH confidence)  ║
-    ╚══════════════════════════════════════════════╝
-
-  Pair #11  [C++]
   ────────────────────────────────────────
     File A    : 11.cpp
     Function A: findDuplicate (line 3)
@@ -187,10 +155,10 @@
       └── SemanticDetector  : 100.00%  (weight: 15%)
 
     ╔══════════════════════════════════════════════╗
-    ║  HYBRID SCORE:  78.13%  (HIGH confidence)  ║
+    ║  HYBRID SCORE:  81.19%  (HIGH confidence)  ║
     ╚══════════════════════════════════════════════╝
 
-  Pair #12  [C#]
+  Pair #10  [C#]
   ────────────────────────────────────────
     File A    : 2.cs
     Function A: FindDuplicate (line 2)
@@ -203,10 +171,10 @@
       └── SemanticDetector  : 100.00%  (weight: 15%)
 
     ╔══════════════════════════════════════════════╗
-    ║  HYBRID SCORE:  78.10%  (HIGH confidence)  ║
+    ║  HYBRID SCORE:  81.17%  (HIGH confidence)  ║
     ╚══════════════════════════════════════════════╝
 
-  Pair #13  [C#]
+  Pair #11  [C#]
   ────────────────────────────────────────
     File A    : 5.cs
     Function A: FindDuplicate (line 2)
@@ -219,7 +187,39 @@
       └── SemanticDetector  : 100.00%  (weight: 15%)
 
     ╔══════════════════════════════════════════════╗
-    ║  HYBRID SCORE:  78.10%  (HIGH confidence)  ║
+    ║  HYBRID SCORE:  81.17%  (HIGH confidence)  ║
+    ╚══════════════════════════════════════════════╝
+
+  Pair #12  [C++]
+  ────────────────────────────────────────
+    File A    : 12.cpp
+    Function A: findDuplicate (line 4)
+    File B    : 31.cpp
+    Function B: findDuplicate (line 3)
+
+    Individual Algorithm Scores:
+      ├── LexicalDetector   :  71.55%  (weight: 50%)
+      ├── StructuralDetector: 100.00%  (weight: 35%)
+      └── SemanticDetector  :  74.87%  (weight: 15%)
+
+    ╔══════════════════════════════════════════════╗
+    ║  HYBRID SCORE:  80.91%  (HIGH confidence)  ║
+    ╚══════════════════════════════════════════════╝
+
+  Pair #13  [C++]
+  ────────────────────────────────────────
+    File A    : 22.cpp
+    Function A: findDuplicate (line 3)
+    File B    : 31.cpp
+    Function B: findDuplicate (line 3)
+
+    Individual Algorithm Scores:
+      ├── LexicalDetector   :  71.55%  (weight: 50%)
+      ├── StructuralDetector: 100.00%  (weight: 35%)
+      └── SemanticDetector  :  74.87%  (weight: 15%)
+
+    ╔══════════════════════════════════════════════╗
+    ║  HYBRID SCORE:  80.91%  (HIGH confidence)  ║
     ╚══════════════════════════════════════════════╝
 
   Pair #14  [C++]
@@ -235,7 +235,7 @@
       └── SemanticDetector  : 100.00%  (weight: 15%)
 
     ╔══════════════════════════════════════════════╗
-    ║  HYBRID SCORE:  74.72%  (MEDIUM confidence)  ║
+    ║  HYBRID SCORE:  78.12%  (HIGH confidence)  ║
     ╚══════════════════════════════════════════════╝
 
   Pair #15  [C#]
@@ -251,7 +251,7 @@
       └── SemanticDetector  : 100.00%  (weight: 15%)
 
     ╔══════════════════════════════════════════════╗
-    ║  HYBRID SCORE:  74.11%  (MEDIUM confidence)  ║
+    ║  HYBRID SCORE:  77.76%  (HIGH confidence)  ║
     ╚══════════════════════════════════════════════╝
 
   Pair #16  [C#]
@@ -267,7 +267,7 @@
       └── SemanticDetector  : 100.00%  (weight: 15%)
 
     ╔══════════════════════════════════════════════╗
-    ║  HYBRID SCORE:  74.11%  (MEDIUM confidence)  ║
+    ║  HYBRID SCORE:  77.76%  (HIGH confidence)  ║
     ╚══════════════════════════════════════════════╝
 
   Pair #17  [C++]
@@ -283,7 +283,7 @@
       └── SemanticDetector  : 100.00%  (weight: 15%)
 
     ╔══════════════════════════════════════════════╗
-    ║  HYBRID SCORE:  72.76%  (MEDIUM confidence)  ║
+    ║  HYBRID SCORE:  76.55%  (HIGH confidence)  ║
     ╚══════════════════════════════════════════════╝
 
   Pair #18  [C++]
@@ -299,7 +299,7 @@
       └── SemanticDetector  : 100.00%  (weight: 15%)
 
     ╔══════════════════════════════════════════════╗
-    ║  HYBRID SCORE:  71.99%  (MEDIUM confidence)  ║
+    ║  HYBRID SCORE:  75.85%  (HIGH confidence)  ║
     ╚══════════════════════════════════════════════╝
 
   Pair #19  [C++]
@@ -315,26 +315,10 @@
       └── SemanticDetector  :  81.85%  (weight: 15%)
 
     ╔══════════════════════════════════════════════╗
-    ║  HYBRID SCORE:  71.15%  (MEDIUM confidence)  ║
+    ║  HYBRID SCORE:  72.70%  (MEDIUM confidence)  ║
     ╚══════════════════════════════════════════════╝
 
-  Pair #20  [C++]
-  ────────────────────────────────────────
-    File A    : 18.cpp
-    Function A: findDuplicate (line 3)
-    File B    : 6.cpp
-    Function B: findDuplicate (line 2)
-
-    Individual Algorithm Scores:
-      ├── LexicalDetector   :  42.67%  (weight: 50%)
-      ├── StructuralDetector: 100.00%  (weight: 35%)
-      └── SemanticDetector  :  62.67%  (weight: 15%)
-
-    ╔══════════════════════════════════════════════╗
-    ║  HYBRID SCORE:  65.74%  (MEDIUM confidence)  ║
-    ╚══════════════════════════════════════════════╝
-
-  Pair #21  [Java]
+  Pair #20  [Java]
   ────────────────────────────────────────
     File A    : 13.java
     Function A: findDuplicate (line 2)
@@ -347,10 +331,10 @@
       └── SemanticDetector  :  86.88%  (weight: 15%)
 
     ╔══════════════════════════════════════════════╗
-    ║  HYBRID SCORE:  63.26%  (MEDIUM confidence)  ║
+    ║  HYBRID SCORE:  66.78%  (MEDIUM confidence)  ║
     ╚══════════════════════════════════════════════╝
 
-  Pair #22  [Java]
+  Pair #21  [Java]
   ────────────────────────────────────────
     File A    : 14.java
     Function A: findDuplicate (line 2)
@@ -363,10 +347,10 @@
       └── SemanticDetector  :  86.88%  (weight: 15%)
 
     ╔══════════════════════════════════════════════╗
-    ║  HYBRID SCORE:  63.26%  (MEDIUM confidence)  ║
+    ║  HYBRID SCORE:  66.78%  (MEDIUM confidence)  ║
     ╚══════════════════════════════════════════════╝
 
-  Pair #23  [Java]
+  Pair #22  [Java]
   ────────────────────────────────────────
     File A    : 12.java
     Function A: findDuplicate (line 2)
@@ -379,74 +363,10 @@
       └── SemanticDetector  :  86.88%  (weight: 15%)
 
     ╔══════════════════════════════════════════════╗
-    ║  HYBRID SCORE:  62.96%  (MEDIUM confidence)  ║
+    ║  HYBRID SCORE:  66.51%  (MEDIUM confidence)  ║
     ╚══════════════════════════════════════════════╝
 
-  Pair #24  [C++]
-  ────────────────────────────────────────
-    File A    : 21.cpp
-    Function A: findDuplicate (line 3)
-    File B    : 24.cpp
-    Function B: findDuplicate (line 1)
-
-    Individual Algorithm Scores:
-      ├── LexicalDetector   :  74.70%  (weight: 50%)
-      ├── StructuralDetector:  35.43%  (weight: 35%)
-      └── SemanticDetector  :  85.64%  (weight: 15%)
-
-    ╔══════════════════════════════════════════════╗
-    ║  HYBRID SCORE:  62.60%  (MEDIUM confidence)  ║
-    ╚══════════════════════════════════════════════╝
-
-  Pair #25  [C++]
-  ────────────────────────────────────────
-    File A    : 11.cpp
-    Function A: findDuplicate (line 3)
-    File B    : 21.cpp
-    Function B: findDuplicate (line 3)
-
-    Individual Algorithm Scores:
-      ├── LexicalDetector   :  74.70%  (weight: 50%)
-      ├── StructuralDetector:  35.16%  (weight: 35%)
-      └── SemanticDetector  :  85.64%  (weight: 15%)
-
-    ╔══════════════════════════════════════════════╗
-    ║  HYBRID SCORE:  62.50%  (MEDIUM confidence)  ║
-    ╚══════════════════════════════════════════════╝
-
-  Pair #26  [C++]
-  ────────────────────────────────────────
-    File A    : 21.cpp
-    Function A: findDuplicate (line 3)
-    File B    : 4.cpp
-    Function B: findDuplicate (line 3)
-
-    Individual Algorithm Scores:
-      ├── LexicalDetector   :  73.30%  (weight: 50%)
-      ├── StructuralDetector:  35.16%  (weight: 35%)
-      └── SemanticDetector  :  85.64%  (weight: 15%)
-
-    ╔══════════════════════════════════════════════╗
-    ║  HYBRID SCORE:  61.80%  (MEDIUM confidence)  ║
-    ╚══════════════════════════════════════════════╝
-
-  Pair #27  [C++]
-  ────────────────────────────────────────
-    File A    : 2.cpp
-    Function A: findDuplicate (line 3)
-    File B    : 28.cpp
-    Function B: findDuplicate (line 3)
-
-    Individual Algorithm Scores:
-      ├── LexicalDetector   :  78.50%  (weight: 50%)
-      ├── StructuralDetector:  34.05%  (weight: 35%)
-      └── SemanticDetector  :  70.44%  (weight: 15%)
-
-    ╔══════════════════════════════════════════════╗
-    ║  HYBRID SCORE:  61.73%  (MEDIUM confidence)  ║
-    ╚══════════════════════════════════════════════╝
-
-  Pair #28  [Java]
+  Pair #23  [Java]
   ────────────────────────────────────────
     File A    : 13.java
     Function A: findDuplicate (line 2)
@@ -459,10 +379,10 @@
       └── SemanticDetector  : 100.00%  (weight: 15%)
 
     ╔══════════════════════════════════════════════╗
-    ║  HYBRID SCORE:  61.41%  (MEDIUM confidence)  ║
+    ║  HYBRID SCORE:  66.35%  (MEDIUM confidence)  ║
     ╚══════════════════════════════════════════════╝
 
-  Pair #29  [Java]
+  Pair #24  [Java]
   ────────────────────────────────────────
     File A    : 15.java
     Function A: findDuplicate (line 3)
@@ -475,7 +395,87 @@
       └── SemanticDetector  : 100.00%  (weight: 15%)
 
     ╔══════════════════════════════════════════════╗
-    ║  HYBRID SCORE:  61.41%  (MEDIUM confidence)  ║
+    ║  HYBRID SCORE:  66.35%  (MEDIUM confidence)  ║
+    ╚══════════════════════════════════════════════╝
+
+  Pair #25  [C++]
+  ────────────────────────────────────────
+    File A    : 21.cpp
+    Function A: findDuplicate (line 3)
+    File B    : 24.cpp
+    Function B: findDuplicate (line 1)
+
+    Individual Algorithm Scores:
+      ├── LexicalDetector   :  74.70%  (weight: 50%)
+      ├── StructuralDetector:  35.43%  (weight: 35%)
+      └── SemanticDetector  :  85.64%  (weight: 15%)
+
+    ╔══════════════════════════════════════════════╗
+    ║  HYBRID SCORE:  65.65%  (MEDIUM confidence)  ║
+    ╚══════════════════════════════════════════════╝
+
+  Pair #26  [C++]
+  ────────────────────────────────────────
+    File A    : 11.cpp
+    Function A: findDuplicate (line 3)
+    File B    : 21.cpp
+    Function B: findDuplicate (line 3)
+
+    Individual Algorithm Scores:
+      ├── LexicalDetector   :  74.70%  (weight: 50%)
+      ├── StructuralDetector:  35.16%  (weight: 35%)
+      └── SemanticDetector  :  85.64%  (weight: 15%)
+
+    ╔══════════════════════════════════════════════╗
+    ║  HYBRID SCORE:  65.57%  (MEDIUM confidence)  ║
+    ╚══════════════════════════════════════════════╝
+
+  Pair #27  [C++]
+  ────────────────────────────────────────
+    File A    : 21.cpp
+    Function A: findDuplicate (line 3)
+    File B    : 4.cpp
+    Function B: findDuplicate (line 3)
+
+    Individual Algorithm Scores:
+      ├── LexicalDetector   :  73.30%  (weight: 50%)
+      ├── StructuralDetector:  35.16%  (weight: 35%)
+      └── SemanticDetector  :  85.64%  (weight: 15%)
+
+    ╔══════════════════════════════════════════════╗
+    ║  HYBRID SCORE:  64.94%  (MEDIUM confidence)  ║
+    ╚══════════════════════════════════════════════╝
+
+  Pair #28  [Java]
+  ────────────────────────────────────────
+    File A    : 12.java
+    Function A: findDuplicate (line 2)
+    File B    : 9.java
+    Function B: findDuplicate_fastSlow (line 1)
+
+    Individual Algorithm Scores:
+      ├── LexicalDetector   :  70.34%  (weight: 50%)
+      ├── StructuralDetector:  27.43%  (weight: 35%)
+      └── SemanticDetector  : 100.00%  (weight: 15%)
+
+    ╔══════════════════════════════════════════════╗
+    ║  HYBRID SCORE:  64.88%  (MEDIUM confidence)  ║
+    ╚══════════════════════════════════════════════╝
+
+  Pair #29  [C++]
+  ────────────────────────────────────────
+    File A    : 18.cpp
+    Function A: findDuplicate (line 3)
+    File B    : 6.cpp
+    Function B: findDuplicate (line 2)
+
+    Individual Algorithm Scores:
+      ├── LexicalDetector   :  42.67%  (weight: 50%)
+      ├── StructuralDetector: 100.00%  (weight: 35%)
+      └── SemanticDetector  :  62.67%  (weight: 15%)
+
+    ╔══════════════════════════════════════════════╗
+    ║  HYBRID SCORE:  64.87%  (MEDIUM confidence)  ║
     ╚══════════════════════════════════════════════╝
 
   Pair #30  [C++]
@@ -491,10 +491,26 @@
       └── SemanticDetector  :  85.64%  (weight: 15%)
 
     ╔══════════════════════════════════════════════╗
-    ║  HYBRID SCORE:  61.20%  (MEDIUM confidence)  ║
+    ║  HYBRID SCORE:  64.39%  (MEDIUM confidence)  ║
     ╚══════════════════════════════════════════════╝
 
   Pair #31  [C++]
+  ────────────────────────────────────────
+    File A    : 2.cpp
+    Function A: findDuplicate (line 3)
+    File B    : 28.cpp
+    Function B: findDuplicate (line 3)
+
+    Individual Algorithm Scores:
+      ├── LexicalDetector   :  78.50%  (weight: 50%)
+      ├── StructuralDetector:  34.05%  (weight: 35%)
+      └── SemanticDetector  :  70.44%  (weight: 15%)
+
+    ╔══════════════════════════════════════════════╗
+    ║  HYBRID SCORE:  63.15%  (MEDIUM confidence)  ║
+    ╚══════════════════════════════════════════════╝
+
+  Pair #32  [C++]
   ────────────────────────────────────────
     File A    : 15.cpp
     Function A: findDuplicate (line 4)
@@ -507,7 +523,119 @@
       └── SemanticDetector  :  71.48%  (weight: 15%)
 
     ╔══════════════════════════════════════════════╗
-    ║  HYBRID SCORE:  60.06%  (MEDIUM confidence)  ║
+    ║  HYBRID SCORE:  61.45%  (MEDIUM confidence)  ║
+    ╚══════════════════════════════════════════════╝
+
+  Pair #33  [C++]
+  ────────────────────────────────────────
+    File A    : 2.cpp
+    Function A: findDuplicate (line 3)
+    File B    : 4.cpp
+    Function B: findDuplicate (line 3)
+
+    Individual Algorithm Scores:
+      ├── LexicalDetector   :  72.20%  (weight: 50%)
+      ├── StructuralDetector:  39.04%  (weight: 35%)
+      └── SemanticDetector  :  66.52%  (weight: 15%)
+
+    ╔══════════════════════════════════════════════╗
+    ║  HYBRID SCORE:  60.83%  (MEDIUM confidence)  ║
+    ╚══════════════════════════════════════════════╝
+
+  Pair #34  [Java]
+  ────────────────────────────────────────
+    File A    : 10.java
+    Function A: findDuplicate (line 2)
+    File B    : 13.java
+    Function B: findDuplicate (line 2)
+
+    Individual Algorithm Scores:
+      ├── LexicalDetector   :  73.26%  (weight: 50%)
+      ├── StructuralDetector:  39.04%  (weight: 35%)
+      └── SemanticDetector  :  64.19%  (weight: 15%)
+
+    ╔══════════════════════════════════════════════╗
+    ║  HYBRID SCORE:  60.73%  (MEDIUM confidence)  ║
+    ╚══════════════════════════════════════════════╝
+
+  Pair #35  [Java]
+  ────────────────────────────────────────
+    File A    : 10.java
+    Function A: findDuplicate (line 2)
+    File B    : 15.java
+    Function B: findDuplicate (line 3)
+
+    Individual Algorithm Scores:
+      ├── LexicalDetector   :  73.26%  (weight: 50%)
+      ├── StructuralDetector:  39.04%  (weight: 35%)
+      └── SemanticDetector  :  64.19%  (weight: 15%)
+
+    ╔══════════════════════════════════════════════╗
+    ║  HYBRID SCORE:  60.73%  (MEDIUM confidence)  ║
+    ╚══════════════════════════════════════════════╝
+
+  Pair #36  [C++]
+  ────────────────────────────────────────
+    File A    : 2.cpp
+    Function A: findDuplicate (line 3)
+    File B    : 24.cpp
+    Function B: findDuplicate (line 1)
+
+    Individual Algorithm Scores:
+      ├── LexicalDetector   :  73.29%  (weight: 50%)
+      ├── StructuralDetector:  36.85%  (weight: 35%)
+      └── SemanticDetector  :  66.52%  (weight: 15%)
+
+    ╔══════════════════════════════════════════════╗
+    ║  HYBRID SCORE:  60.67%  (MEDIUM confidence)  ║
+    ╚══════════════════════════════════════════════╝
+
+  Pair #37  [C++]
+  ────────────────────────────────────────
+    File A    : 11.cpp
+    Function A: findDuplicate (line 3)
+    File B    : 2.cpp
+    Function B: findDuplicate (line 3)
+
+    Individual Algorithm Scores:
+      ├── LexicalDetector   :  71.39%  (weight: 50%)
+      ├── StructuralDetector:  39.04%  (weight: 35%)
+      └── SemanticDetector  :  66.52%  (weight: 15%)
+
+    ╔══════════════════════════════════════════════╗
+    ║  HYBRID SCORE:  60.47%  (MEDIUM confidence)  ║
+    ╚══════════════════════════════════════════════╝
+
+  Pair #38  [C++]
+  ────────────────────────────────────────
+    File A    : 16.cpp
+    Function A: findDuplicate (line 3)
+    File B    : 27.cpp
+    Function B: findDuplicate (line 3)
+
+    Individual Algorithm Scores:
+      ├── LexicalDetector   :  56.81%  (weight: 50%)
+      ├── StructuralDetector:  55.85%  (weight: 35%)
+      └── SemanticDetector  :  72.00%  (weight: 15%)
+
+    ╔══════════════════════════════════════════════╗
+    ║  HYBRID SCORE:  60.32%  (MEDIUM confidence)  ║
+    ╚══════════════════════════════════════════════╝
+
+  Pair #39  [C++]
+  ────────────────────────────────────────
+    File A    : 2.cpp
+    Function A: findDuplicate (line 3)
+    File B    : 21.cpp
+    Function B: findDuplicate (line 3)
+
+    Individual Algorithm Scores:
+      ├── LexicalDetector   :  68.45%  (weight: 50%)
+      ├── StructuralDetector:  43.55%  (weight: 35%)
+      └── SemanticDetector  :  65.71%  (weight: 15%)
+
+    ╔══════════════════════════════════════════════╗
+    ║  HYBRID SCORE:  60.30%  (MEDIUM confidence)  ║
     ╚══════════════════════════════════════════════╝
 
 ------------------------------------------------------------------------
@@ -516,19 +644,19 @@
 
   Confidence Distribution:
     VERY HIGH (>90%): 8 pairs
-    HIGH      (>75%): 5 pairs
-    MEDIUM    (>60%): 18 pairs
+    HIGH      (>75%): 10 pairs
+    MEDIUM    (>60%): 21 pairs
     LOW       (≤60%): 0 pairs
 
   Language Distribution:
     C#        : 6 pairs
-    C++       : 17 pairs
-    Java      : 8 pairs
+    C++       : 22 pairs
+    Java      : 11 pairs
 
   Score Statistics:
     Highest : 100.00%
-    Lowest  : 60.06%
-    Average : 76.45%
+    Lowest  : 60.30%
+    Average : 74.92%
 
 ========================================================================
   End of Report
