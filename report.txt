@@ -2,7 +2,7 @@
      HYBRID CODE CLONE DETECTION TOOL - ANALYSIS REPORT
 ========================================================================
 
-  Timestamp     : 2026-04-18 21:28:07
+  Timestamp     : 2026-04-20 02:36:28
   Input Path    : ./test_input
   Threshold     : 60.0%
   Total Files   : 5
@@ -120,10 +120,10 @@
     Individual Algorithm Scores:
       ├── LexicalDetector   :  65.31%  (weight: 50%)
       ├── StructuralDetector: 100.00%  (weight: 35%)
-      └── SemanticDetector  :  82.49%  (weight: 15%)
+      └── SemanticDetector  :  89.50%  (weight: 15%)
 
     ╔══════════════════════════════════════════════╗
-    ║  HYBRID SCORE:  80.03%  (HIGH confidence)  ║
+    ║  HYBRID SCORE:  81.08%  (HIGH confidence)  ║
     ╚══════════════════════════════════════════════╝
 
 ------------------------------------------------------------------------
@@ -143,8 +143,8 @@
 
   Score Statistics:
     Highest : 100.00%
-    Lowest  : 80.03%
-    Average : 97.15%
+    Lowest  : 81.08%
+    Average : 97.30%
 
 ========================================================================
   End of Report
