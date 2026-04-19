@@ -1,11 +1,17 @@
 """
 Feature Extractor Module
 
-Extracts per-variable feature vectors from C++ token streams.
+Extracts per-variable feature vectors from C++, Java, and C# token streams.
 Used by StructuralDetector.
 
-Each variable gets a feature vector of 26 integer counts capturing its
-usage patterns (in loops, conditions, operations, etc.).
+Each variable gets a feature vector of 27 integer counts capturing its
+usage patterns (in loops, conditions, operations, OOP method calls, etc.).
+
+Language support
+----------------
+* C++  — full support (original)
+* Java — types mapped via UNIFIED_TYPE_ENCODING; OOP method calls detected
+* C#   — types mapped via UNIFIED_TYPE_ENCODING; OOP method calls detected
 """
 
 from typing import Dict, List, NamedTuple
@@ -46,21 +52,85 @@ F_IN_FIRST_LEVEL_LOOP = 22
 F_DEFINED_BY_TYPE = 23
 F_IN_CASE_STATEMENT = 24
 F_IN_SWITCH_STATEMENT = 25
+F_INVOKED_METHOD_ON   = 26  # var.method() — variable invokes a method on itself
 
-NUM_FEATURES = 26
+NUM_FEATURES = 27
 
-# Type encoding (matching SyntaxTreeParser.PopulateDeclaration)
-TYPE_ENCODING = {
-    'int': 1, 'float': 2, 'double': 3, 'string': 4, 'char': 5,
-    'auto': 6, 'bool': 7, 'void': 0, 'long': 1, 'short': 1,
-    'unsigned': 1, 'signed': 1,
+# Unified language-agnostic type encoding
+# Maps semantically equivalent types across C++, Java, and C# to the same
+# integer so that cross-language feature vectors are directly comparable.
+#
+# Code  Semantic group
+# ----  -----------------------------------------------------------------
+#  0    void / no type
+#  1    integer  (int, long, short, byte, uint, …)
+#  2    float
+#  3    double / decimal
+#  4    string / text  (string, String, wchar_t, …)
+#  5    char / Character
+#  6    type-inferred  (auto, var, dynamic)
+#  7    boolean  (bool, boolean, Boolean)
+#  8    list / array container  (vector, List, ArrayList, …)
+#  9    map / dictionary  (map, HashMap, Dictionary, …)
+# 10    set  (set, HashSet, TreeSet, ISet, …)
+UNIFIED_TYPE_ENCODING = {
+    # void
+    'void':         0,
+    # integers — C++
+    'int':          1, 'long':     1, 'short':   1,
+    'signed':       1, 'unsigned': 1,
+    # integers — Java
+    'byte':         1, 'Integer':  1, 'Long':    1, 'Short':   1, 'Byte': 1,
+    # integers — C#
+    'uint':         1, 'ulong':    1, 'ushort':  1, 'sbyte':   1,
+    'nint':         1, 'nuint':    1,
+    # float
+    'float':        2, 'Float':    2,
+    # double / decimal
+    'double':       3, 'Double':   3, 'decimal':  3,
+    # string / text
+    'string':       4, 'String':   4, 'wchar_t': 4,
+    'char8_t':      4, 'char16_t': 4,
+    # char
+    'char':         5, 'Character': 5,
+    # type-inferred
+    'auto':         6, 'var':      6, 'dynamic': 6,
+    # boolean
+    'bool':         7, 'boolean':  7, 'Boolean': 7,
+    # list / array containers
+    'vector':       8, 'list':     8, 'deque':   8, 'array':   8,
+    'List':         8, 'ArrayList': 8, 'LinkedList': 8,
+    'IList':        8, 'ICollection': 8, 'IEnumerable': 8,
+    'Stack':        8, 'Queue':    8, 'Deque':   8, 'Vector':  8,
+    'Collection':   8,
+    # map / dictionary
+    'map':          9, 'Map':      9, 'HashMap': 9, 'TreeMap': 9,
+    'LinkedHashMap': 9, 'Dictionary': 9, 'IDictionary': 9,
+    # set
+    'set':         10, 'Set':     10, 'HashSet': 10,
+    'TreeSet':     10, 'ISet':    10,
 }
 
-# Tokens that indicate a data type for variable declaration
+# Backward-compatible alias — external code importing TYPE_ENCODING still works
+TYPE_ENCODING = UNIFIED_TYPE_ENCODING
+
+# Tokens that indicate a data type for variable declaration.
+# Extended to include Java and C# type names so that _find_declarations()
+# works correctly regardless of which tokenizer produced the token stream.
 DECL_TYPES = frozenset([
+    # C++ primitives and standard-library types
     'int', 'float', 'double', 'char', 'bool', 'void', 'long', 'short',
     'signed', 'unsigned', 'auto', 'string', 'vector', 'map', 'set',
-    'list', 'deque', 'array', 'wchar_t',
+    'list', 'deque', 'array', 'wchar_t', 'char8_t', 'char16_t',
+    # Java primitives and boxed / common library types
+    'boolean', 'byte', 'Integer', 'Long', 'Float', 'Double',
+    'Boolean', 'Byte', 'Short', 'Character', 'String', 'Object',
+    'List', 'ArrayList', 'LinkedList', 'Map', 'HashMap', 'TreeMap',
+    'Set', 'HashSet', 'Queue', 'Deque', 'Stack', 'Vector', 'Collection',
+    # C# primitives and collection types
+    'decimal', 'uint', 'ulong', 'ushort', 'sbyte', 'nint', 'nuint',
+    'var', 'dynamic', 'Dictionary', 'IDictionary', 'IList', 'ICollection',
+    'IEnumerable', 'ISet',
 ])
 
 ADD_SUB_OPS = frozenset(['+', '-', '+=', '-='])
@@ -181,30 +251,72 @@ def _find_parameters(tokens: List[Token], variables: Dict[str, List[int]]) -> No
             i += 1
 
 
+def _skip_template_args(tokens: List[Token], start: int, size: int) -> int:
+    """
+    If tokens[start] opens a template/generic argument list (i.e. is an
+    OPERATOR with value '<'), skip forward past the matching closing '>' and
+    return the index of the first token *after* the closing '>'.
+
+    Handles nested templates such as ``Map<String, List<Integer>>``.
+
+    If tokens[start] is not '<', returns *start* unchanged.
+    """
+    if start >= size or not (tokens[start].type == 'OPERATOR' and tokens[start].value == '<'):
+        return start
+
+    depth = 0
+    j = start
+    while j < size:
+        t = tokens[j]
+        if t.type == 'OPERATOR':
+            if t.value == '<':
+                depth += 1
+            elif t.value == '>':
+                depth -= 1
+                if depth == 0:
+                    return j + 1
+            elif t.value == '>>':
+                # C++ tokeniser may produce '>>' for closing nested templates
+                depth -= 2
+                if depth <= 0:
+                    return j + 1
+        j += 1
+    # Unmatched '<' — bail out to the original position
+    return start
+
+
 def _find_declarations(tokens: List[Token], variables: Dict[str, List[int]]) -> None:
-    """Find variable declarations in the token stream."""
+    """Find variable declarations in the token stream.
+
+    Handles plain types (``int x``) as well as template/generic types
+    (``vector<int> obj``, ``List<String> items``, ``Map<K, V> m``).
+    """
     size = len(tokens)
 
     for i in range(size):
         tok = tokens[i]
 
-        # Pattern: TYPE IDENTIFIER [=...] ;
-        # or: TYPE IDENTIFIER ,
-        if (tok.type == 'DATATYPE' and tok.value in DECL_TYPES and
-                i + 1 < size and tokens[i + 1].type == 'IDENTIFIER'):
+        # Pattern: TYPE [<TemplateArgs>] IDENTIFIER [=...] ;
+        if tok.type == 'DATATYPE' and tok.value in DECL_TYPES:
+            # Skip over template/generic arguments if present
+            next_idx = _skip_template_args(tokens, i + 1, size)
 
-            var_name = tokens[i + 1].value
-            type_val = tok.value
+            if next_idx < size and tokens[next_idx].type == 'IDENTIFIER':
+                var_name = tokens[next_idx].value
+                type_val = tok.value
 
-            if var_name not in variables:
-                variables[var_name] = [0] * NUM_FEATURES
+                if var_name not in variables:
+                    variables[var_name] = [0] * NUM_FEATURES
 
-            variables[var_name][F_DEFINED] += 1
-            variables[var_name][F_DEFINED_BY_TYPE] = TYPE_ENCODING.get(type_val, 0)
+                variables[var_name][F_DEFINED] += 1
+                variables[var_name][F_DEFINED_BY_TYPE] = UNIFIED_TYPE_ENCODING.get(type_val, 0)
 
-            # Check what it's defined by (look at initializer if present)
-            if i + 2 < size and tokens[i + 2].type == 'OPERATOR' and tokens[i + 2].value == '=':
-                _analyze_initializer(tokens, i + 3, var_name, variables)
+                # Check what it's defined by (look at initializer if present)
+                init_idx = next_idx + 1
+                if (init_idx < size
+                        and tokens[init_idx].type == 'OPERATOR'
+                        and tokens[init_idx].value == '='):
+                    _analyze_initializer(tokens, init_idx + 1, var_name, variables)
 
         # Also catch for-loop declarations: for(int i = ...)
         if (tok.type == 'KEYWORD' and tok.value == 'for' and
@@ -406,6 +518,14 @@ def _analyze_usage(tokens: List[Token], variables: Dict[str, List[int]]) -> None
             if (i > 0 and tokens[i - 1].type in ('LPAREN', 'COMMA') and
                     i + 1 < size and tokens[i + 1].type in ('RPAREN', 'COMMA')):
                 feats[F_INVOKED_AS_PARAMETER] += 1
+
+            # Check if variable invokes a method on itself: var.method(
+            # Pattern: IDENTIFIER  DOT  IDENTIFIER  LPAREN
+            if (i + 3 < size
+                    and tokens[i + 1].type == 'DOT'
+                    and tokens[i + 2].type == 'IDENTIFIER'
+                    and tokens[i + 3].type == 'LPAREN'):
+                feats[F_INVOKED_METHOD_ON] += 1
 
             # Check if in add/sub operation
             if (i > 0 and tokens[i - 1].type == 'OPERATOR' and
