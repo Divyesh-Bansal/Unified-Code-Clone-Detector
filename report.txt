@@ -2,8 +2,8 @@
      HYBRID CODE CLONE DETECTION TOOL - ANALYSIS REPORT
 ========================================================================
 
-  Timestamp     : 2026-04-20 02:36:28
-  Input Path    : ./test_input
+  Timestamp     : 2026-04-20 03:09:57
+  Input Path    : test_input
   Threshold     : 60.0%
   Total Files   : 5
   Total Functions: 15
@@ -113,17 +113,17 @@
   Pair #7  [C#]
   ────────────────────────────────────────
     File A    : 1.cs
-    Function A: m (line 5)
+    Function A: CalculateSum (line 5)
     File B    : 2.cs
-    Function B: s (line 5)
+    Function B: AddNumbers (line 5)
 
     Individual Algorithm Scores:
-      ├── LexicalDetector   :  65.31%  (weight: 50%)
+      ├── LexicalDetector   : 100.00%  (weight: 50%)
       ├── StructuralDetector: 100.00%  (weight: 35%)
-      └── SemanticDetector  :  89.50%  (weight: 15%)
+      └── SemanticDetector  : 100.00%  (weight: 15%)
 
     ╔══════════════════════════════════════════════╗
-    ║  HYBRID SCORE:  81.08%  (HIGH confidence)  ║
+    ║  HYBRID SCORE: 100.00%  (VERY HIGH confidence)  ║
     ╚══════════════════════════════════════════════╝
 
 ------------------------------------------------------------------------
@@ -131,8 +131,8 @@
 ------------------------------------------------------------------------
 
   Confidence Distribution:
-    VERY HIGH (>90%): 6 pairs
-    HIGH      (>75%): 1 pairs
+    VERY HIGH (>90%): 7 pairs
+    HIGH      (>75%): 0 pairs
     MEDIUM    (>60%): 0 pairs
     LOW       (≤60%): 0 pairs
 
@@ -143,8 +143,8 @@
 
   Score Statistics:
     Highest : 100.00%
-    Lowest  : 81.08%
-    Average : 97.30%
+    Lowest  : 100.00%
+    Average : 100.00%
 
 ========================================================================
   End of Report
