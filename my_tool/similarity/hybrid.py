@@ -28,9 +28,9 @@ class SimilarityResult(NamedTuple):
 
 
 # Weights for the ensemble
-WEIGHT_LEXICAL = 0.40
-WEIGHT_STRUCTURAL = 0.30
-WEIGHT_SEMANTIC = 0.30
+WEIGHT_LEXICAL = 0.25
+WEIGHT_STRUCTURAL = 0.15
+WEIGHT_SEMANTIC = 0.60
 
 
 def classify_confidence(score: float) -> str:

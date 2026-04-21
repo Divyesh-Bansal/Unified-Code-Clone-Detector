@@ -69,7 +69,7 @@ for ($i = 0; $i -lt $batches.Count; $i++) {
 
     # Run the tool  (path is a positional argument, --output directs report file)
     Write-Host "  Running tool on test$batchNum ..."
-    python -m my_tool $testDir --threshold 60 --mode file --output $reportFile 2>&1
+    python -m my_tool $testDir --threshold 50 --mode file --output $reportFile 2>&1
     Write-Host "  Report saved to test${batchNum}.txt"
     Write-Host ""
 }
