@@ -24,6 +24,7 @@ from my_tool.cs_tokenizer import tokenize_cs_file
 from my_tool.cs_method_extractor import extract_cs_methods
 from my_tool.normalizer import normalize
 from my_tool.similarity.hybrid import compute_hybrid_similarity
+from my_tool.similarity.feature_extractor import extract_features
 from my_tool.file_compare import compute_file_similarity
 from my_tool.report import (
     MethodPairResult,
@@ -306,19 +307,27 @@ def compare_file_pairs(files: List[str], threshold: float,
     # Pre-tokenize and extract methods for every file once
     file_tokens: List[List[Token]] = []
     file_methods: List[List[MethodInfo]] = []
+    file_norms: List[List[Token]] = []
+    file_features: List[list] = []
     valid: List[bool] = []
 
     for filepath in files:
         try:
             tokens = _tokenize_file_for_language(filepath, language)
             methods = _extract_methods_for_language(tokens, language)
+            norm_tokens, _ = normalize(tokens)
+            features = [extract_features(m.tokens) for m in methods]
             file_tokens.append(tokens)
             file_methods.append(methods)
+            file_norms.append(norm_tokens)
+            file_features.append(features)
             valid.append(True)
         except Exception as e:
             print(f"  Warning: Skipping {filepath}: {e}", file=sys.stderr)
             file_tokens.append([])
             file_methods.append([])
+            file_norms.append([])
+            file_features.append([])
             valid.append(False)
 
     for i in range(n):
@@ -332,6 +341,10 @@ def compare_file_pairs(files: List[str], threshold: float,
                 result = compute_file_similarity(
                     file_tokens[i], file_tokens[j],
                     file_methods[i], file_methods[j],
+                    norm_a=file_norms[i],
+                    norm_b=file_norms[j],
+                    features_a=file_features[i],
+                    features_b=file_features[j],
                 )
 
                 if result.hybrid_score >= threshold:

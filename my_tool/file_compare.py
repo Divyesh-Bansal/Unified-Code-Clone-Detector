@@ -29,8 +29,8 @@ from my_tool.similarity.hybrid import (
 
 
 def _bipartite_best_match_score(
-    methods_a: List[MethodInfo],
-    methods_b: List[MethodInfo],
+    items_a: list,
+    items_b: list,
     scorer,
 ) -> float:
     """
@@ -40,37 +40,39 @@ def _bipartite_best_match_score(
     partner in the larger list, then average the best-match scores.
 
     Args:
-        methods_a: Functions extracted from file A.
-        methods_b: Functions extracted from file B.
-        scorer:    Callable(method_a, method_b) → float (0-100).
+        items_a: Pairs of (MethodInfo, feature_dict) from file A.
+        items_b: Pairs of (MethodInfo, feature_dict) from file B.
+        scorer:  Callable(item_a, item_b) → float (0-100).
 
     Returns:
         Average best-match score (0-100), or 0.0 if either list is empty.
     """
-    if not methods_a or not methods_b:
+    if not items_a or not items_b:
         return 0.0
 
     # Always iterate over the smaller side for efficiency
-    if len(methods_a) > len(methods_b):
-        methods_a, methods_b = methods_b, methods_a
+    if len(items_a) > len(items_b):
+        items_a, items_b = items_b, items_a
 
     best_scores: List[float] = []
-    for m_a in methods_a:
-        best = max(scorer(m_a, m_b) for m_b in methods_b)
+    for i_a in items_a:
+        best = max(scorer(i_a, i_b) for i_b in items_b)
         best_scores.append(best)
 
     return sum(best_scores) / len(best_scores)
 
 
-def _structural_scorer(m_a: MethodInfo, m_b: MethodInfo) -> float:
-    """Compute structural similarity between two methods."""
-    vars_a = extract_features(m_a.tokens)
-    vars_b = extract_features(m_b.tokens)
+def _structural_scorer(item_a, item_b) -> float:
+    """Compute structural similarity between two paired items."""
+    _, vars_a = item_a
+    _, vars_b = item_b
     return structural_similarity(vars_a, vars_b)
 
 
-def _semantic_scorer(m_a: MethodInfo, m_b: MethodInfo) -> float:
-    """Compute semantic similarity between two methods."""
+def _semantic_scorer(item_a, item_b) -> float:
+    """Compute semantic similarity between two paired items."""
+    m_a, _ = item_a
+    m_b, _ = item_b
     return semantic_similarity(
         m_a.tokens, m_b.tokens,
         m_a.return_type, m_b.return_type,
@@ -83,6 +85,10 @@ def compute_file_similarity(
     tokens_b: List[Token],
     methods_a: List[MethodInfo],
     methods_b: List[MethodInfo],
+    norm_a: List[Token] = None,
+    norm_b: List[Token] = None,
+    features_a: list = None,
+    features_b: list = None,
 ) -> SimilarityResult:
     """
     Compute hybrid similarity between two entire source files.
@@ -107,19 +113,29 @@ def compute_file_similarity(
         )
 
     # ── 1. Lexical: holistic over the whole file ──────────────────
-    norm_a, _ = normalize(tokens_a)
-    norm_b, _ = normalize(tokens_b)
+    if norm_a is None:
+        norm_a, _ = normalize(tokens_a)
+    if norm_b is None:
+        norm_b, _ = normalize(tokens_b)
     lex = lexical_score(norm_a, norm_b)
     lex_val = lex['lexical']
 
     # ── 2. Structural: bipartite best-match ───────────────────────
+    if features_a is None:
+        features_a = [extract_features(m.tokens) for m in methods_a]
+    if features_b is None:
+        features_b = [extract_features(m.tokens) for m in methods_b]
+
+    items_a = list(zip(methods_a, features_a))
+    items_b = list(zip(methods_b, features_b))
+
     struct_val = _bipartite_best_match_score(
-        methods_a, methods_b, _structural_scorer,
+        items_a, items_b, _structural_scorer,
     )
 
     # ── 3. Semantic: bipartite best-match ─────────────────────────
     sem_val = _bipartite_best_match_score(
-        methods_a, methods_b, _semantic_scorer,
+        items_a, items_b, _semantic_scorer,
     )
 
     # ── 4. Weighted ensemble (same weights as function mode) ──────
