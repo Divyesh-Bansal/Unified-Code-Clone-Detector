@@ -2,12 +2,12 @@
      HYBRID CODE CLONE DETECTION TOOL - ANALYSIS REPORT
 ========================================================================
 
-  Timestamp     : 2026-04-21 21:20:08
+  Timestamp     : 2026-04-21 23:38:00
   Input Path    : c:\Users\Pramod\Documents\GitHub\my_tool\batch_tests\test6
   Detection Mode: File-Level
   Threshold     : 50.0%
   Total Files   : 12
-  Similar Pairs : 12
+  Similar Pairs : 9
 
 ------------------------------------------------------------------------
 
@@ -20,12 +20,12 @@
     File B    : 113\113.java
 
     Individual Algorithm Scores:
-      ├── LexicalDetector   :  97.31%  (weight: 40%)
-      ├── StructuralDetector:  50.00%  (weight: 30%)
-      └── SemanticDetector  : 100.00%  (weight: 30%)
+      ├── LexicalDetector   :  97.31%
+      ├── StructuralDetector:  50.00%
+      └── SemanticDetector  : 100.00%
 
     ╔══════════════════════════════════════════════╗
-    ║  HYBRID SCORE:  91.83%  (VERY HIGH confidence)  ║
+    ║  HYBRID SCORE:  93.39%  ║
     ╚══════════════════════════════════════════════╝
 
   Pair #2  [Java]
@@ -34,12 +34,12 @@
     File B    : 108\108.java
 
     Individual Algorithm Scores:
-      ├── LexicalDetector   :  94.74%  (weight: 40%)
-      ├── StructuralDetector:  50.00%  (weight: 30%)
-      └── SemanticDetector  : 100.00%  (weight: 30%)
+      ├── LexicalDetector   :  94.74%
+      ├── StructuralDetector:  50.00%
+      └── SemanticDetector  : 100.00%
 
     ╔══════════════════════════════════════════════╗
-    ║  HYBRID SCORE:  91.19%  (VERY HIGH confidence)  ║
+    ║  HYBRID SCORE:  91.84%  ║
     ╚══════════════════════════════════════════════╝
 
   Pair #3  [Java]
@@ -48,12 +48,12 @@
     File B    : 112\112.java
 
     Individual Algorithm Scores:
-      ├── LexicalDetector   :  94.74%  (weight: 40%)
-      ├── StructuralDetector:  50.00%  (weight: 30%)
-      └── SemanticDetector  : 100.00%  (weight: 30%)
+      ├── LexicalDetector   :  94.74%
+      ├── StructuralDetector:  50.00%
+      └── SemanticDetector  : 100.00%
 
     ╔══════════════════════════════════════════════╗
-    ║  HYBRID SCORE:  91.19%  (VERY HIGH confidence)  ║
+    ║  HYBRID SCORE:  91.84%  ║
     ╚══════════════════════════════════════════════╝
 
   Pair #4  [Java]
@@ -62,12 +62,12 @@
     File B    : 112\112.java
 
     Individual Algorithm Scores:
-      ├── LexicalDetector   :  94.74%  (weight: 40%)
-      ├── StructuralDetector:  50.00%  (weight: 30%)
-      └── SemanticDetector  : 100.00%  (weight: 30%)
+      ├── LexicalDetector   :  94.74%
+      ├── StructuralDetector:  50.00%
+      └── SemanticDetector  : 100.00%
 
     ╔══════════════════════════════════════════════╗
-    ║  HYBRID SCORE:  91.19%  (VERY HIGH confidence)  ║
+    ║  HYBRID SCORE:  91.84%  ║
     ╚══════════════════════════════════════════════╝
 
   Pair #5  [Java]
@@ -76,12 +76,12 @@
     File B    : 113\113.java
 
     Individual Algorithm Scores:
-      ├── LexicalDetector   :  94.74%  (weight: 40%)
-      ├── StructuralDetector:  50.00%  (weight: 30%)
-      └── SemanticDetector  : 100.00%  (weight: 30%)
+      ├── LexicalDetector   :  94.74%
+      ├── StructuralDetector:  50.00%
+      └── SemanticDetector  : 100.00%
 
     ╔══════════════════════════════════════════════╗
-    ║  HYBRID SCORE:  91.19%  (VERY HIGH confidence)  ║
+    ║  HYBRID SCORE:  91.84%  ║
     ╚══════════════════════════════════════════════╝
 
   Pair #6  [Java]
@@ -90,12 +90,12 @@
     File B    : 113\113.java
 
     Individual Algorithm Scores:
-      ├── LexicalDetector   :  94.74%  (weight: 40%)
-      ├── StructuralDetector:  50.00%  (weight: 30%)
-      └── SemanticDetector  : 100.00%  (weight: 30%)
+      ├── LexicalDetector   :  94.74%
+      ├── StructuralDetector:  50.00%
+      └── SemanticDetector  : 100.00%
 
     ╔══════════════════════════════════════════════╗
-    ║  HYBRID SCORE:  91.19%  (VERY HIGH confidence)  ║
+    ║  HYBRID SCORE:  91.84%  ║
     ╚══════════════════════════════════════════════╝
 
   Pair #7  [Java]
@@ -104,12 +104,12 @@
     File B    : 133\133.java
 
     Individual Algorithm Scores:
-      ├── LexicalDetector   :  32.99%  (weight: 40%)
-      ├── StructuralDetector:  78.15%  (weight: 30%)
-      └── SemanticDetector  :  82.50%  (weight: 30%)
+      ├── LexicalDetector   :  32.99%
+      ├── StructuralDetector:  78.15%
+      └── SemanticDetector  :  82.50%
 
     ╔══════════════════════════════════════════════╗
-    ║  HYBRID SCORE:  69.47%  (MEDIUM confidence)  ║
+    ║  HYBRID SCORE:  74.64%  ║
     ╚══════════════════════════════════════════════╝
 
   Pair #8  [Java]
@@ -118,12 +118,12 @@
     File B    : 173\173.java
 
     Individual Algorithm Scores:
-      ├── LexicalDetector   :  46.07%  (weight: 40%)
-      ├── StructuralDetector:  35.68%  (weight: 30%)
-      └── SemanticDetector  :  76.67%  (weight: 30%)
+      ├── LexicalDetector   :  46.07%
+      ├── StructuralDetector:  35.68%
+      └── SemanticDetector  :  76.67%
 
     ╔══════════════════════════════════════════════╗
-    ║  HYBRID SCORE:  62.87%  (MEDIUM confidence)  ║
+    ║  HYBRID SCORE:  62.87%  ║
     ╚══════════════════════════════════════════════╝
 
   Pair #9  [Java]
@@ -132,54 +132,12 @@
     File B    : 174\174.java
 
     Individual Algorithm Scores:
-      ├── LexicalDetector   :  38.84%  (weight: 40%)
-      ├── StructuralDetector: 100.00%  (weight: 30%)
-      └── SemanticDetector  :  59.17%  (weight: 30%)
+      ├── LexicalDetector   :  38.84%
+      ├── StructuralDetector: 100.00%
+      └── SemanticDetector  :  59.17%
 
     ╔══════════════════════════════════════════════╗
-    ║  HYBRID SCORE:  60.21%  (MEDIUM confidence)  ║
-    ╚══════════════════════════════════════════════╝
-
-  Pair #10  [Java]
-  ────────────────────────────────────────
-    File A    : 133\133.java
-    File B    : 174\174.java
-
-    Individual Algorithm Scores:
-      ├── LexicalDetector   :   8.84%  (weight: 40%)
-      ├── StructuralDetector: 100.00%  (weight: 30%)
-      └── SemanticDetector  :  65.00%  (weight: 30%)
-
-    ╔══════════════════════════════════════════════╗
-    ║  HYBRID SCORE:  56.21%  (LOW confidence)  ║
-    ╚══════════════════════════════════════════════╝
-
-  Pair #11  [Java]
-  ────────────────────────────────────────
-    File A    : 131\131.java
-    File B    : 174\174.java
-
-    Individual Algorithm Scores:
-      ├── LexicalDetector   :   5.91%  (weight: 40%)
-      ├── StructuralDetector: 100.00%  (weight: 30%)
-      └── SemanticDetector  :  65.00%  (weight: 30%)
-
-    ╔══════════════════════════════════════════════╗
-    ║  HYBRID SCORE:  55.48%  (LOW confidence)  ║
-    ╚══════════════════════════════════════════════╝
-
-  Pair #12  [Java]
-  ────────────────────────────────────────
-    File A    : 133\133.java
-    File B    : 135\135.java
-
-    Individual Algorithm Scores:
-      ├── LexicalDetector   :  13.15%  (weight: 40%)
-      ├── StructuralDetector: 100.00%  (weight: 30%)
-      └── SemanticDetector  :  52.91%  (weight: 30%)
-
-    ╔══════════════════════════════════════════════╗
-    ║  HYBRID SCORE:  50.03%  (LOW confidence)  ║
+    ║  HYBRID SCORE:  60.21%  ║
     ╚══════════════════════════════════════════════╝
 
 ------------------------------------------------------------------------
@@ -190,12 +148,12 @@
     VERY HIGH (>90%): 6 pairs
     HIGH      (>75%): 0 pairs
     MEDIUM    (>60%): 3 pairs
-    LOW       (≤60%): 3 pairs
+    LOW       (≤60%): 0 pairs
 
   Score Statistics:
-    Highest : 91.83%
-    Lowest  : 50.03%
-    Average : 75.17%
+    Highest : 93.39%
+    Lowest  : 60.21%
+    Average : 83.37%
 
 ========================================================================
   End of Report

@@ -6,7 +6,7 @@ Usage:
 
 Where:
     <path>      Path to a .cpp/.h/.java file or directory containing source files
-    --threshold Minimum similarity percentage to report (default: 60)
+    --threshold Minimum similarity percentage to report (default: 50)
     --output    Path for the output report file (default: report.txt)
     --mode      Detection mode: 'fxn' (per-function) or 'file' (per-file)
 """

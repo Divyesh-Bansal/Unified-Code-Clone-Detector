@@ -99,13 +99,12 @@ def generate_report(results: List[MethodPairResult],
                     f.write(f"    Function B: {pair.func_b} (line {pair.line_b})\n")
                 f.write(f"\n")
                 f.write(f"    Individual Algorithm Scores:\n")
-                f.write(f"      ├── LexicalDetector   : {r.lexical_score:6.2f}%  (weight: 40%)\n")
-                f.write(f"      ├── StructuralDetector: {r.structural_score:6.2f}%  (weight: 30%)\n")
-                f.write(f"      └── SemanticDetector  : {r.semantic_score:6.2f}%  (weight: 30%)\n")
+                f.write(f"      ├── LexicalDetector   : {r.lexical_score:6.2f}%\n")
+                f.write(f"      ├── StructuralDetector: {r.structural_score:6.2f}%\n")
+                f.write(f"      └── SemanticDetector  : {r.semantic_score:6.2f}%\n")
                 f.write(f"\n")
                 f.write(f"    ╔══════════════════════════════════════════════╗\n")
-                f.write(f"    ║  HYBRID SCORE: {r.hybrid_score:6.2f}%  "
-                        f"({r.confidence} confidence)  ║\n")
+                f.write(f"    ║  HYBRID SCORE: {r.hybrid_score:6.2f}%  ║\n")
                 f.write(f"    ╚══════════════════════════════════════════════╝\n")
                 f.write(f"\n")
 
