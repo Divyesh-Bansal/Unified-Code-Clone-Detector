@@ -113,19 +113,6 @@ def generate_report(results: List[MethodPairResult],
             f.write("  SUMMARY\n")
             f.write("-" * 72 + "\n\n")
 
-            # Confidence distribution
-            very_high = sum(1 for p in results if p.result.confidence == "VERY HIGH")
-            high = sum(1 for p in results if p.result.confidence == "HIGH")
-            medium = sum(1 for p in results if p.result.confidence == "MEDIUM")
-            low = sum(1 for p in results if p.result.confidence == "LOW")
-
-            f.write(f"  Confidence Distribution:\n")
-            f.write(f"    VERY HIGH (>90%): {very_high} pairs\n")
-            f.write(f"    HIGH      (>75%): {high} pairs\n")
-            f.write(f"    MEDIUM    (>60%): {medium} pairs\n")
-            f.write(f"    LOW       (≤60%): {low} pairs\n")
-            f.write(f"\n")
-
             # Language distribution
             lang_counts = {}
             for p in results:

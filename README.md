@@ -102,3 +102,17 @@ Runs hardcoded batches from the SOCO dataset for batch testing.
 
 Results are displayed in the console and saved to the specified output file (default: `report.txt`).
 
+
+Running on first 81 files of SOCO Dataset:
+Precision: 93.75% 
+Recall: 78.95% 
+F1-Score: 85.73%
+
+| Predicted: CLONE (16)| Predicted: NOT CLONE (3224)                         |
+----------------------|------------------------|-----------------------------|
+Actual: CLONE (19)    |   True Positive (TP)   |    False Negative (FN)      |
+                      |          15            |             4               |
+----------------------|------------------------|-----------------------------|
+Actual: NOT CLONE     |  False Positive (FP)   |    True Negative (TN)       |
+(3221)                |           1            |           3220              |
+----------------------|------------------------|-----------------------------|
