@@ -386,7 +386,7 @@ def main():
     parser.add_argument(
         '--threshold', '-t',
         type=float,
-        default=60.0,
+        default=50.0,
         help='Minimum similarity percentage to report (default: 60)'
     )
     parser.add_argument(

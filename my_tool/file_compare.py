@@ -25,6 +25,7 @@ from my_tool.similarity.hybrid import (
     WEIGHT_STRUCTURAL,
     WEIGHT_SEMANTIC,
     classify_confidence,
+    calculate_dynamic_weights,
 )
 
 
@@ -138,10 +139,12 @@ def compute_file_similarity(
         items_a, items_b, _semantic_scorer,
     )
 
-    # ── 4. Weighted ensemble (same weights as function mode) ──────
-    hybrid = (lex_val * WEIGHT_LEXICAL +
-              struct_val * WEIGHT_STRUCTURAL +
-              sem_val * WEIGHT_SEMANTIC)
+    # ── 4. Weighted ensemble (dynamic weighting) ──────────────
+    w_lex, w_struct, w_sem = calculate_dynamic_weights(lex_val, struct_val, sem_val)
+
+    hybrid = (lex_val * w_lex +
+              struct_val * w_struct +
+              sem_val * w_sem)
     hybrid = round(hybrid, 2)
     confidence = classify_confidence(hybrid)
 
@@ -153,9 +156,9 @@ def compute_file_similarity(
             'matching_strategy': 'bipartite_best_match',
         },
         'weights': {
-            'lexical': WEIGHT_LEXICAL,
-            'structural': WEIGHT_STRUCTURAL,
-            'semantic': WEIGHT_SEMANTIC,
+            'lexical': w_lex,
+            'structural': w_struct,
+            'semantic': w_sem,
         },
     }
 

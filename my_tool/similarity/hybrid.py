@@ -27,10 +27,45 @@ class SimilarityResult(NamedTuple):
     details: Dict           # Detailed sub-scores
 
 
-# Weights for the ensemble
+# Weights for the ensemble fallback
 WEIGHT_LEXICAL = 0.25
 WEIGHT_STRUCTURAL = 0.15
 WEIGHT_SEMANTIC = 0.60
+
+
+def calculate_dynamic_weights(lex_val: float, struct_val: float, sem_val: float) -> tuple:
+    """
+    Determine weights dynamically based on specific cloned 'cheating' profiles.
+    
+    Returns:
+        (w_lexical, w_structural, w_semantic)
+    """
+    # 1. Set the Default Baseline Weights
+    w_lex = 0.25
+    w_str = 0.15
+    w_sem = 0.60
+
+    # 2. Apply Dynamic Adjustments
+
+    # RULE 1: The "Boilerplate / Empty Template" Trap
+    if lex_val < 30.0:
+        w_lex = 0.70
+        w_str = 0.10
+        w_sem = 0.20
+        
+    # RULE 2: The "Method Shuffler"
+    elif sem_val >= 80.0 and lex_val >= 30.0 and lex_val < 50.0:
+        w_lex = 0.15
+        w_str = 0.10
+        w_sem = 0.75
+        
+    # RULE 3: The "Blatant Copy"
+    elif lex_val >= 75.0:
+        w_lex = 0.60
+        w_str = 0.10
+        w_sem = 0.30
+
+    return (w_lex, w_str, w_sem)
 
 
 def classify_confidence(score: float) -> str:
@@ -107,10 +142,12 @@ def compute_hybrid_similarity(tokens_a: List[Token], tokens_b: List[Token],
         param_count_a, param_count_b
     )
 
-    # 5. Weighted ensemble
-    hybrid = (lex_val * WEIGHT_LEXICAL +
-              struct_val * WEIGHT_STRUCTURAL +
-              sem_val * WEIGHT_SEMANTIC)
+    # 5. Weighted ensemble dynamically adjusted 
+    w_lex, w_struct, w_sem = calculate_dynamic_weights(lex_val, struct_val, sem_val)
+
+    hybrid = (lex_val * w_lex +
+              struct_val * w_struct +
+              sem_val * w_sem)
 
     hybrid = round(hybrid, 2)
     confidence = classify_confidence(hybrid)
@@ -122,9 +159,9 @@ def compute_hybrid_similarity(tokens_a: List[Token], tokens_b: List[Token],
             'vars_b_count': len(vars_b),
         },
         'weights': {
-            'lexical': WEIGHT_LEXICAL,
-            'structural': WEIGHT_STRUCTURAL,
-            'semantic': WEIGHT_SEMANTIC,
+            'lexical': w_lex,
+            'structural': w_struct,
+            'semantic': w_sem,
         }
     }
 
