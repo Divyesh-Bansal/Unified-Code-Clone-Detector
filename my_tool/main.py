@@ -2,12 +2,13 @@
 Hybrid Code Clone Detection Tool - Main Entry Point
 
 Usage:
-    python -m my_tool <path> [--threshold 60] [--output report.txt]
+    python -m my_tool <path> [--threshold 60] [--output report.txt] [--mode fxn|file]
 
 Where:
     <path>      Path to a .cpp/.h/.java file or directory containing source files
     --threshold Minimum similarity percentage to report (default: 60)
     --output    Path for the output report file (default: report.txt)
+    --mode      Detection mode: 'fxn' (per-function) or 'file' (per-file)
 """
 
 import argparse
@@ -23,6 +24,7 @@ from my_tool.cs_tokenizer import tokenize_cs_file
 from my_tool.cs_method_extractor import extract_cs_methods
 from my_tool.normalizer import normalize
 from my_tool.similarity.hybrid import compute_hybrid_similarity
+from my_tool.file_compare import compute_file_similarity
 from my_tool.report import (
     MethodPairResult,
     generate_report,
@@ -259,6 +261,100 @@ def compare_all_methods(all_methods: List[Tuple[str, MethodInfo]],
     return results
 
 
+def _tokenize_file_for_language(filepath: str, language: str) -> List[Token]:
+    """Tokenize a source file using the appropriate language tokenizer."""
+    if language == 'java':
+        return tokenize_java_file(filepath)
+    elif language == 'cs':
+        return tokenize_cs_file(filepath)
+    else:
+        return tokenize_file(filepath)
+
+
+def _extract_methods_for_language(tokens: List[Token], language: str) -> List[MethodInfo]:
+    """Extract methods using the appropriate language extractor."""
+    if language == 'java':
+        return extract_java_methods(tokens)
+    elif language == 'cs':
+        return extract_cs_methods(tokens)
+    else:
+        return extract_methods(tokens)
+
+
+def _lang_label(language: str) -> str:
+    """Map internal language key to display label."""
+    return {'cpp': 'C++', 'java': 'Java', 'cs': 'C#'}.get(language, language)
+
+
+def compare_file_pairs(files: List[str], threshold: float,
+                       language: str = 'cpp') -> List[MethodPairResult]:
+    """
+    Compare all file pairs within a language group using file-level detection.
+
+    Args:
+        files:     List of file paths in the same language group.
+        threshold: Minimum similarity percentage to report.
+        language:  Internal language key ('cpp', 'java', 'cs').
+
+    Returns:
+        List of MethodPairResult for pairs above threshold.
+    """
+    results: List[MethodPairResult] = []
+    n = len(files)
+    label = _lang_label(language)
+
+    # Pre-tokenize and extract methods for every file once
+    file_tokens: List[List[Token]] = []
+    file_methods: List[List[MethodInfo]] = []
+    valid: List[bool] = []
+
+    for filepath in files:
+        try:
+            tokens = _tokenize_file_for_language(filepath, language)
+            methods = _extract_methods_for_language(tokens, language)
+            file_tokens.append(tokens)
+            file_methods.append(methods)
+            valid.append(True)
+        except Exception as e:
+            print(f"  Warning: Skipping {filepath}: {e}", file=sys.stderr)
+            file_tokens.append([])
+            file_methods.append([])
+            valid.append(False)
+
+    for i in range(n):
+        if not valid[i]:
+            continue
+        for j in range(i + 1, n):
+            if not valid[j]:
+                continue
+
+            try:
+                result = compute_file_similarity(
+                    file_tokens[i], file_tokens[j],
+                    file_methods[i], file_methods[j],
+                )
+
+                if result.hybrid_score >= threshold:
+                    results.append(MethodPairResult(
+                        file_a=files[i],
+                        func_a="<file>",
+                        line_a=0,
+                        file_b=files[j],
+                        func_b="<file>",
+                        line_b=0,
+                        result=result,
+                        language=label,
+                    ))
+            except Exception as e:
+                print(f"  Warning: Error comparing "
+                      f"{os.path.basename(files[i])} vs "
+                      f"{os.path.basename(files[j])}: {e}",
+                      file=sys.stderr)
+
+    results.sort(key=lambda r: r.result.hybrid_score, reverse=True)
+    return results
+
+
 def main():
     """Main entry point for the CLI."""
     parser = argparse.ArgumentParser(
@@ -285,6 +381,12 @@ def main():
         type=str,
         default='report.txt',
         help='Output report file path (default: report.txt)'
+    )
+    parser.add_argument(
+        '--mode', '-m',
+        choices=['fxn', 'file'],
+        default='fxn',
+        help="Detection mode: 'fxn' (per-function, default) or 'file' (per-file)"
     )
 
     args = parser.parse_args()
@@ -314,71 +416,121 @@ def main():
     print(f"\nAnalyzing {len(files)} source file(s) "
           f"({len(cpp_files)} C++, {len(java_files)} Java, {len(cs_files)} C#)...")
 
-    # Extract methods per language group
-    all_methods_cpp = extract_all_methods(cpp_files) if cpp_files else []
-    all_methods_java = extract_all_methods_java(java_files) if java_files else []
-    all_methods_cs = extract_all_methods_cs(cs_files) if cs_files else []
+    mode = args.mode
 
-    total_functions = len(all_methods_cpp) + len(all_methods_java) + len(all_methods_cs)
+    if mode == 'file':
+        # ── File-level detection ──────────────────────────────────
+        print(f"Mode: file-level comparison")
 
-    if total_functions == 0:
-        print("No functions found in the provided files.")
-        sys.exit(0)
+        all_results: List[MethodPairResult] = []
 
-    if total_functions < 2 and len(all_methods_cpp) < 2 and len(all_methods_java) < 2 and len(all_methods_cs) < 2:
-        print("Need at least two functions in the same language to compare.")
-        sys.exit(0)
+        for lang_key, lang_files in [('cpp', cpp_files),
+                                      ('java', java_files),
+                                      ('cs', cs_files)]:
+            if len(lang_files) < 2:
+                continue
+            pairs_count = len(lang_files) * (len(lang_files) - 1) // 2
+            print(f"Comparing {pairs_count} {_lang_label(lang_key)} file pair(s)...")
+            lang_results = compare_file_pairs(
+                lang_files, args.threshold, language=lang_key,
+            )
+            all_results.extend(lang_results)
 
-    print(f"Found {total_functions} function(s) "
-          f"({len(all_methods_cpp)} C++, {len(all_methods_java)} Java, {len(all_methods_cs)} C#).")
+        if not all_results:
+            print("No similar file pairs found above the threshold.")
 
-    # Compare within each language group independently
-    all_results: List[MethodPairResult] = []
+        all_results.sort(key=lambda r: r.result.hybrid_score, reverse=True)
 
-    if len(all_methods_cpp) >= 2:
-        cpp_pairs = len(all_methods_cpp) * (len(all_methods_cpp) - 1) // 2
-        print(f"Comparing {cpp_pairs} C++ pair(s)...")
-        cpp_results = compare_all_methods(
-            all_methods_cpp, args.threshold, language="C++")
-        all_results.extend(cpp_results)
-
-    if len(all_methods_java) >= 2:
-        java_pairs = len(all_methods_java) * (len(all_methods_java) - 1) // 2
-        print(f"Comparing {java_pairs} Java pair(s)...")
-        java_results = compare_all_methods(
-            all_methods_java, args.threshold, language="Java")
-        all_results.extend(java_results)
-
-    if len(all_methods_cs) >= 2:
-        cs_pairs = len(all_methods_cs) * (len(all_methods_cs) - 1) // 2
-        print(f"Comparing {cs_pairs} C# pair(s)...")
-        cs_results = compare_all_methods(
-            all_methods_cs, args.threshold, language="C#")
-        all_results.extend(cs_results)
-
-    # Sort merged results by hybrid score descending
-    all_results.sort(key=lambda r: r.result.hybrid_score, reverse=True)
-
-    # Console output
-    console_output = format_console_output(
-        all_results, args.path, args.threshold,
-        total_files=len(files),
-        total_functions=total_functions
-    )
-    print(console_output)
-
-    # Generate report file
-    try:
-        report_path = generate_report(
+        # Console output
+        console_output = format_console_output(
             all_results, args.path, args.threshold,
-            output_path=args.output,
+            total_files=len(files),
+            total_functions=0,
+            mode='file',
+        )
+        print(console_output)
+
+        # Generate report file
+        try:
+            report_path = generate_report(
+                all_results, args.path, args.threshold,
+                output_path=args.output,
+                total_files=len(files),
+                total_functions=0,
+                mode='file',
+            )
+            print(f"Report saved to: {report_path}")
+        except IOError as e:
+            print(f"Error writing report: {e}", file=sys.stderr)
+            sys.exit(1)
+
+    else:
+        # ── Function-level detection (existing pipeline) ──────────
+        # Extract methods per language group
+        all_methods_cpp = extract_all_methods(cpp_files) if cpp_files else []
+        all_methods_java = extract_all_methods_java(java_files) if java_files else []
+        all_methods_cs = extract_all_methods_cs(cs_files) if cs_files else []
+
+        total_functions = len(all_methods_cpp) + len(all_methods_java) + len(all_methods_cs)
+
+        if total_functions == 0:
+            print("No functions found in the provided files.")
+            sys.exit(0)
+
+        if total_functions < 2 and len(all_methods_cpp) < 2 and len(all_methods_java) < 2 and len(all_methods_cs) < 2:
+            print("Need at least two functions in the same language to compare.")
+            sys.exit(0)
+
+        print(f"Found {total_functions} function(s) "
+              f"({len(all_methods_cpp)} C++, {len(all_methods_java)} Java, {len(all_methods_cs)} C#).")
+
+        # Compare within each language group independently
+        all_results: List[MethodPairResult] = []
+
+        if len(all_methods_cpp) >= 2:
+            cpp_pairs = len(all_methods_cpp) * (len(all_methods_cpp) - 1) // 2
+            print(f"Comparing {cpp_pairs} C++ pair(s)...")
+            cpp_results = compare_all_methods(
+                all_methods_cpp, args.threshold, language="C++")
+            all_results.extend(cpp_results)
+
+        if len(all_methods_java) >= 2:
+            java_pairs = len(all_methods_java) * (len(all_methods_java) - 1) // 2
+            print(f"Comparing {java_pairs} Java pair(s)...")
+            java_results = compare_all_methods(
+                all_methods_java, args.threshold, language="Java")
+            all_results.extend(java_results)
+
+        if len(all_methods_cs) >= 2:
+            cs_pairs = len(all_methods_cs) * (len(all_methods_cs) - 1) // 2
+            print(f"Comparing {cs_pairs} C# pair(s)...")
+            cs_results = compare_all_methods(
+                all_methods_cs, args.threshold, language="C#")
+            all_results.extend(cs_results)
+
+        # Sort merged results by hybrid score descending
+        all_results.sort(key=lambda r: r.result.hybrid_score, reverse=True)
+
+        # Console output
+        console_output = format_console_output(
+            all_results, args.path, args.threshold,
             total_files=len(files),
             total_functions=total_functions
         )
-        print(f"Report saved to: {report_path}")
-    except IOError as e:
-        print(f"Error writing report: {e}", file=sys.stderr)
-        sys.exit(1)
+        print(console_output)
+
+        # Generate report file
+        try:
+            report_path = generate_report(
+                all_results, args.path, args.threshold,
+                output_path=args.output,
+                total_files=len(files),
+                total_functions=total_functions
+            )
+            print(f"Report saved to: {report_path}")
+        except IOError as e:
+            print(f"Error writing report: {e}", file=sys.stderr)
+            sys.exit(1)
 
 
 if __name__ == '__main__':

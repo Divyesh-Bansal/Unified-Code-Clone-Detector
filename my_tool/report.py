@@ -38,7 +38,8 @@ def generate_report(results: List[MethodPairResult],
                     threshold: float,
                     output_path: str = "report.txt",
                     total_files: int = 0,
-                    total_functions: int = 0) -> str:
+                    total_functions: int = 0,
+                    mode: str = 'fxn') -> str:
     """
     Generate a detailed report.txt file with similarity analysis results.
 
@@ -65,9 +66,11 @@ def generate_report(results: List[MethodPairResult],
 
             f.write(f"  Timestamp     : {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
             f.write(f"  Input Path    : {input_path}\n")
+            f.write(f"  Detection Mode: {'File-Level' if mode == 'file' else 'Function-Level'}\n")
             f.write(f"  Threshold     : {threshold}%\n")
             f.write(f"  Total Files   : {total_files}\n")
-            f.write(f"  Total Functions: {total_functions}\n")
+            if mode != 'file':
+                f.write(f"  Total Functions: {total_functions}\n")
             f.write(f"  Similar Pairs : {len(results)}\n")
             f.write("\n" + "-" * 72 + "\n")
 
@@ -76,7 +79,10 @@ def generate_report(results: List[MethodPairResult],
                 f.write("\n" + "=" * 72 + "\n")
                 return os.path.abspath(output_path)
 
-            f.write("\n  SIMILAR FUNCTION PAIRS\n")
+            if mode == 'file':
+                f.write("\n  SIMILAR FILE PAIRS\n")
+            else:
+                f.write("\n  SIMILAR FUNCTION PAIRS\n")
             f.write("-" * 72 + "\n\n")
 
             for idx, pair in enumerate(results, 1):
@@ -86,14 +92,16 @@ def generate_report(results: List[MethodPairResult],
                 f.write(f"  Pair #{idx}  {lang_tag}\n")
                 f.write(f"  {'─' * 40}\n")
                 f.write(f"    File A    : {_rel(pair.file_a, input_path)}\n")
-                f.write(f"    Function A: {pair.func_a} (line {pair.line_a})\n")
+                if mode != 'file':
+                    f.write(f"    Function A: {pair.func_a} (line {pair.line_a})\n")
                 f.write(f"    File B    : {_rel(pair.file_b, input_path)}\n")
-                f.write(f"    Function B: {pair.func_b} (line {pair.line_b})\n")
+                if mode != 'file':
+                    f.write(f"    Function B: {pair.func_b} (line {pair.line_b})\n")
                 f.write(f"\n")
                 f.write(f"    Individual Algorithm Scores:\n")
-                f.write(f"      ├── LexicalDetector   : {r.lexical_score:6.2f}%  (weight: 50%)\n")
-                f.write(f"      ├── StructuralDetector: {r.structural_score:6.2f}%  (weight: 35%)\n")
-                f.write(f"      └── SemanticDetector  : {r.semantic_score:6.2f}%  (weight: 15%)\n")
+                f.write(f"      ├── LexicalDetector   : {r.lexical_score:6.2f}%  (weight: 40%)\n")
+                f.write(f"      ├── StructuralDetector: {r.structural_score:6.2f}%  (weight: 30%)\n")
+                f.write(f"      └── SemanticDetector  : {r.semantic_score:6.2f}%  (weight: 30%)\n")
                 f.write(f"\n")
                 f.write(f"    ╔══════════════════════════════════════════════╗\n")
                 f.write(f"    ║  HYBRID SCORE: {r.hybrid_score:6.2f}%  "
@@ -150,7 +158,8 @@ def format_console_output(results: List[MethodPairResult],
                           input_path: str,
                           threshold: float,
                           total_files: int = 0,
-                          total_functions: int = 0) -> str:
+                          total_functions: int = 0,
+                          mode: str = 'fxn') -> str:
     """
     Format results for console output.
 
@@ -170,14 +179,21 @@ def format_console_output(results: List[MethodPairResult],
     lines.append("  HYBRID CODE CLONE DETECTION RESULTS")
     lines.append("=" * 60)
     lines.append(f"  Input: {input_path}")
+    lines.append(f"  Mode: {'File-Level' if mode == 'file' else 'Function-Level'}")
     lines.append(f"  Threshold: {threshold}%")
-    lines.append(f"  Files: {total_files}  |  Functions: {total_functions}  "
-                 f"|  Similar Pairs: {len(results)}")
+    if mode == 'file':
+        lines.append(f"  Files: {total_files}  |  Similar Pairs: {len(results)}")
+    else:
+        lines.append(f"  Files: {total_files}  |  Functions: {total_functions}  "
+                     f"|  Similar Pairs: {len(results)}")
     lines.append("-" * 60)
 
     if not results:
         lines.append("")
-        lines.append("  No similar function pairs found.")
+        if mode == 'file':
+            lines.append("  No similar file pairs found.")
+        else:
+            lines.append("  No similar function pairs found.")
         lines.append("=" * 60)
         return "\n".join(lines)
 
@@ -186,8 +202,12 @@ def format_console_output(results: List[MethodPairResult],
         lang_tag = f"[{pair.language}]"
         lines.append("")
         lines.append(f"  Pair #{idx}:  {lang_tag}")
-        lines.append(f"    {_rel(pair.file_a, input_path)}: {pair.func_a} (line {pair.line_a})")
-        lines.append(f"    {_rel(pair.file_b, input_path)}: {pair.func_b} (line {pair.line_b})")
+        if mode == 'file':
+            lines.append(f"    {_rel(pair.file_a, input_path)}")
+            lines.append(f"    {_rel(pair.file_b, input_path)}")
+        else:
+            lines.append(f"    {_rel(pair.file_a, input_path)}: {pair.func_a} (line {pair.line_a})")
+            lines.append(f"    {_rel(pair.file_b, input_path)}: {pair.func_b} (line {pair.line_b})")
         lines.append(f"    Lexical: {r.lexical_score:.1f}%  |  Structural: {r.structural_score:.1f}%  |  Semantic: {r.semantic_score:.1f}%")
         lines.append(f"    ──> HYBRID SCORE: {r.hybrid_score:.2f}%  [{r.confidence}]")
 

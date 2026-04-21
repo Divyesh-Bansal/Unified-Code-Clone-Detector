@@ -1,0 +1,132 @@
+========================================================================
+     HYBRID CODE CLONE DETECTION TOOL - ANALYSIS REPORT
+========================================================================
+
+  Timestamp     : 2026-04-21 15:18:39
+  Input Path    : .\soco_small\
+  Detection Mode: File-Level
+  Threshold     : 70.0%
+  Total Files   : 41
+  Similar Pairs : 7
+
+------------------------------------------------------------------------
+
+  SIMILAR FILE PAIRS
+------------------------------------------------------------------------
+
+  Pair #1  [Java]
+  ────────────────────────────────────────
+    File A    : 017\017.java
+    File B    : 022\022.java
+
+    Individual Algorithm Scores:
+      ├── LexicalDetector   : 100.00%  (weight: 40%)
+      ├── StructuralDetector: 100.00%  (weight: 30%)
+      └── SemanticDetector  : 100.00%  (weight: 30%)
+
+    ╔══════════════════════════════════════════════╗
+    ║  HYBRID SCORE: 100.00%  (VERY HIGH confidence)  ║
+    ╚══════════════════════════════════════════════╝
+
+  Pair #2  [Java]
+  ────────────────────────────────────────
+    File A    : 014\014.java
+    File B    : 021\021.java
+
+    Individual Algorithm Scores:
+      ├── LexicalDetector   :  98.25%  (weight: 40%)
+      ├── StructuralDetector: 100.00%  (weight: 30%)
+      └── SemanticDetector  : 100.00%  (weight: 30%)
+
+    ╔══════════════════════════════════════════════╗
+    ║  HYBRID SCORE:  99.30%  (VERY HIGH confidence)  ║
+    ╚══════════════════════════════════════════════╝
+
+  Pair #3  [Java]
+  ────────────────────────────────────────
+    File A    : 015\015.java
+    File B    : 023\023.java
+
+    Individual Algorithm Scores:
+      ├── LexicalDetector   : 100.00%  (weight: 40%)
+      ├── StructuralDetector:  85.71%  (weight: 30%)
+      └── SemanticDetector  : 100.00%  (weight: 30%)
+
+    ╔══════════════════════════════════════════════╗
+    ║  HYBRID SCORE:  95.71%  (VERY HIGH confidence)  ║
+    ╚══════════════════════════════════════════════╝
+
+  Pair #4  [Java]
+  ────────────────────────────────────────
+    File A    : 005\005.java
+    File B    : 006\006.java
+
+    Individual Algorithm Scores:
+      ├── LexicalDetector   :  99.95%  (weight: 40%)
+      ├── StructuralDetector:  82.38%  (weight: 30%)
+      └── SemanticDetector  : 100.00%  (weight: 30%)
+
+    ╔══════════════════════════════════════════════╗
+    ║  HYBRID SCORE:  94.69%  (VERY HIGH confidence)  ║
+    ╚══════════════════════════════════════════════╝
+
+  Pair #5  [Java]
+  ────────────────────────────────────────
+    File A    : 016\016.java
+    File B    : 024\024.java
+
+    Individual Algorithm Scores:
+      ├── LexicalDetector   :  86.20%  (weight: 40%)
+      ├── StructuralDetector: 100.00%  (weight: 30%)
+      └── SemanticDetector  :  98.10%  (weight: 30%)
+
+    ╔══════════════════════════════════════════════╗
+    ║  HYBRID SCORE:  93.91%  (VERY HIGH confidence)  ║
+    ╚══════════════════════════════════════════════╝
+
+  Pair #6  [Java]
+  ────────────────────────────────────────
+    File A    : 033\033.java
+    File B    : 034\034.java
+
+    Individual Algorithm Scores:
+      ├── LexicalDetector   :  78.74%  (weight: 40%)
+      ├── StructuralDetector:  62.50%  (weight: 30%)
+      └── SemanticDetector  :  97.38%  (weight: 30%)
+
+    ╔══════════════════════════════════════════════╗
+    ║  HYBRID SCORE:  79.46%  (HIGH confidence)  ║
+    ╚══════════════════════════════════════════════╝
+
+  Pair #7  [Java]
+  ────────────────────────────────────────
+    File A    : 030\030.java
+    File B    : 032\032.java
+
+    Individual Algorithm Scores:
+      ├── LexicalDetector   :  40.86%  (weight: 40%)
+      ├── StructuralDetector: 100.00%  (weight: 30%)
+      └── SemanticDetector  : 100.00%  (weight: 30%)
+
+    ╔══════════════════════════════════════════════╗
+    ║  HYBRID SCORE:  76.34%  (HIGH confidence)  ║
+    ╚══════════════════════════════════════════════╝
+
+------------------------------------------------------------------------
+  SUMMARY
+------------------------------------------------------------------------
+
+  Confidence Distribution:
+    VERY HIGH (>90%): 5 pairs
+    HIGH      (>75%): 2 pairs
+    MEDIUM    (>60%): 0 pairs
+    LOW       (≤60%): 0 pairs
+
+  Score Statistics:
+    Highest : 100.00%
+    Lowest  : 76.34%
+    Average : 91.34%
+
+========================================================================
+  End of Report
+========================================================================
