@@ -41,8 +41,12 @@ $batches = @(
 
 for ($i = 0; $i -lt $batches.Count; $i++) {
     $batchNum  = $i + 1
-    $testDir   = Join-Path $root "test$batchNum"
-    $reportFile = Join-Path $root "test${batchNum}.txt"
+    $batchTestsDir = Join-Path $root "batch_tests"
+    if (-not (Test-Path $batchTestsDir)) {
+        New-Item -ItemType Directory -Path $batchTestsDir | Out-Null
+    }
+    $testDir   = Join-Path $batchTestsDir "test$batchNum"
+    $reportFile = Join-Path $batchTestsDir "test${batchNum}.txt"
 
     Write-Host "=== Batch $batchNum ===" -ForegroundColor Cyan
 
