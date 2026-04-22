@@ -116,3 +116,19 @@ Actual: CLONE (19)    |   True Positive (TP)   |    False Negative (FN)      |
 Actual: NOT CLONE     |  False Positive (FP)   |    True Negative (TN)       |
 (3221)                |           1            |           3220              |
 ----------------------|------------------------|-----------------------------|
+
+
+
+On SOCO:
+Precision: 72.63%
+Recall: 71.13%
+F1-Score: 71.87%
+
+| Predicted: CLONE (95)  | Predicted: NOT CLONE (33,316)|
+----------------------|------------------------|------------------------------|
+Actual: CLONE (97)    |   True Positive (TP)   |    False Negative (FN)       |
+                      |          69            |             28               |
+----------------------|------------------------|------------------------------|
+Actual: NOT CLONE     |  False Positive (FP)   |    True Negative (TN)        |
+(33,314)              |          26            |           33,288             |
+----------------------|------------------------|------------------------------|
