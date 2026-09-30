@@ -1,4 +1,4 @@
-# Hybrid Code Clone Detection Tool
+# Unified Code Clone Detection Tool
 
 A tool that detects similar/duplicate functions in C++/Java/C# source code.
 
